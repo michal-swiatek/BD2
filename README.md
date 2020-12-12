@@ -1,2 +1,2 @@
 # BD2
-Univerity project on relational data bases
+Uni project on relational data bases. 
