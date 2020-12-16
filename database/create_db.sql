@@ -1,10 +1,15 @@
+DROP DATABASE IF EXISTS bd2;
+CREATE DATABASE bd2;
+USE bd2;
+
 CREATE TABLE IF NOT EXISTS administrator (
-    id INT NOT NULL,
+    id INT NOT NULL AUTO_INCREMENT,
+    uzytkownik_id INT NOT NULL,
     CONSTRAINT admin_pk PRIMARY KEY( id )
 );
 
 CREATE TABLE IF NOT EXISTS budynek (
-    id            	INT NOT NULL,
+    id            	INT NOT NULL AUTO_INCREMENT,
     nazwa            	VARCHAR(40),
     ulica             	VARCHAR(40) NOT NULL,
     numer            	INT NOT NULL,
@@ -14,7 +19,7 @@ CREATE TABLE IF NOT EXISTS budynek (
 );
 
 CREATE TABLE IF NOT EXISTS dane_kontaktowe (
-    id                 	INT NOT NULL,
+    id                 	INT NOT NULL AUTO_INCREMENT,
     kontakt                    VARCHAR(50) NOT NULL,
     typ_kontaktu_typ           VARCHAR(20) NOT NULL,
     firma_cateringowa_id  	INT,
@@ -27,7 +32,7 @@ CREATE TABLE IF NOT EXISTS dane_kontaktowe (
 );
 
 CREATE TABLE IF NOT EXISTS dodatkowa_obsluga (
-    id  	 INT NOT NULL,
+    id  	 INT NOT NULL AUTO_INCREMENT,
     obsluga     VARCHAR(50) NOT NULL,
     opis        TEXT,
     cena        INT NOT NULL, 
@@ -35,7 +40,7 @@ CREATE TABLE IF NOT EXISTS dodatkowa_obsluga (
 );
 
 CREATE TABLE IF NOT EXISTS dodatkowy_atrybut (
-    id   	INT NOT NULL,
+    id   	INT NOT NULL AUTO_INCREMENT,
     atrybut  	VARCHAR(30) NOT NULL,
     opis     	TEXT, 
     CONSTRAINT dodatkowy_atrybut_pk PRIMARY KEY (id)
@@ -56,32 +61,33 @@ CREATE TABLE IF NOT EXISTS dostepnosc_sprzetu (
 );
 
 CREATE TABLE IF NOT EXISTS firma_cateringowa (
-    id        	    	INT NOT NULL,
+    id        	    	INT NOT NULL AUTO_INCREMENT,
     nazwa           	VARCHAR(60) NOT NULL,
     limit_zamowien  	INT NOT NULL, 
     CONSTRAINT firma_cateringowa_pk PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS kierownik (
-    id 		INT NOT NULL, 
+    id 		INT NOT NULL AUTO_INCREMENT, 
+    uzytkownik_id 	INT NOT NULL,
     CONSTRAINT kierownik_pk PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS klasyfikacja_produktu (
     klasa     		VARCHAR(50) NOT NULL,
-    id  		INT NOT NULL,
+    id  		INT NOT NULL AUTO_INCREMENT,
     CONSTRAINT klasyfikacja_produktu_pk PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS komorka_organizacyjna (
     nazwa         	VARCHAR(30) NOT NULL,
-    id    		INT NOT NULL,
+    id    		INT NOT NULL AUTO_INCREMENT,
     kierownik_id  	INT NOT NULL,
     CONSTRAINT komorka_organizacyjna_pk PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS miasto (
-    id  		INT NOT NULL,
+    id  		INT NOT NULL AUTO_INCREMENT,
     nazwa      	VARCHAR(40) NOT NULL,
     CONSTRAINT miasto_pk PRIMARY KEY (id)
 );
@@ -95,14 +101,15 @@ CREATE TABLE IF NOT EXISTS pozycja (
 
 
 CREATE TABLE IF NOT EXISTS pracownik (
-    id                        INT NOT NULL,
+    id                        INT NOT NULL AUTO_INCREMENT,
     komorka_organizacyjna_id  INT NOT NULL, 
+    uzytkownik_id 	       INT NOT NULL,
     CONSTRAINT pracownik_pk PRIMARY KEY (id)
 );
 
 
 CREATE TABLE IF NOT EXISTS produkt_spozywczy (
-    id               		 INT NOT NULL,
+    id               		 INT NOT NULL AUTO_INCREMENT,
     cena                        INT NOT NULL,
     max_zamowienie              INT,
     firma_cateringowa_id  	 INT NOT NULL,
@@ -112,7 +119,7 @@ CREATE TABLE IF NOT EXISTS produkt_spozywczy (
 
 CREATE TABLE IF NOT EXISTS projekt (
     nazwa                     VARCHAR(120) NOT NULL,
-    id               	       INT NOT NULL,
+    id               	       INT NOT NULL AUTO_INCREMENT,
     komorka_organizacyjna_id  INT, 
     CONSTRAINT projekt_pk PRIMARY KEY (id)
 );
@@ -123,7 +130,7 @@ CREATE TABLE IF NOT EXISTS przypisanie_produktu (
     CONSTRAINT przypisanie_produktu_pk PRIMARY KEY ( produkt_spozywczy_id, klasyfikacja_produktu_id)
 );
 CREATE TABLE IF NOT EXISTS rezerwacja (
-    id              		INT NOT NULL,
+    id              		INT NOT NULL AUTO_INCREMENT, 
     rozpoczecie          	DATETIME NOT NULL,
     zakonczenie          	DATETIME NOT NULL,
     sala_id         		INT NOT NULL,
@@ -143,13 +150,13 @@ CREATE TABLE IF NOT EXISTS rezerwacja_obslugi (
 
 CREATE TABLE IF NOT EXISTS rodzaj_sprzetu (
     rodzaj   VARCHAR(40) NOT NULL,
-    id  INT NOT NULL, 
+    id  INT NOT NULL AUTO_INCREMENT, 
     CONSTRAINT rodzaj_sprzetu_pk PRIMARY KEY (id)
 );
 
 
 CREATE TABLE IF NOT EXISTS sala (
-    id          	INT NOT NULL,
+    id          	INT NOT NULL AUTO_INCREMENT,
     powierzchnia      	INT NOT NULL,
     numer_sali        	INT NOT NULL,
     budynek_id    	INT NOT NULL,
@@ -160,7 +167,7 @@ CREATE TABLE IF NOT EXISTS sala (
 
 CREATE TABLE IF NOT EXISTS sprzet (
     model                   VARCHAR(50) NOT NULL,
-    id                      INT NOT NULL,
+    id                      INT NOT NULL AUTO_INCREMENT,
     rodzaj_sprzetu_id INT NOT NULL,
     CONSTRAINT sprzet_pk PRIMARY KEY (id)
 );
@@ -172,24 +179,30 @@ CREATE TABLE IF NOT EXISTS typ_kontaktu (
 
 
 CREATE TABLE IF NOT EXISTS uzytkownik (
-    id          INT NOT NULL,
+    id          INT NOT NULL AUTO_INCREMENT,
     imie        VARCHAR(60) NOT NULL,
     nazwisko    VARCHAR(100) NOT NULL,
     login       VARCHAR(40) NOT NULL,
-    hash_hasla  INT NOT NULL,
-    typ         VARCHAR(15) NOT NULL, 
+    hash_hasla  VARCHAR(64) NOT NULL,
+    administrator_id INT,
+    pracownik_id INT,
+    kierownik_id INT, 
+    CONSTRAINT arc_uzytkownik CHECK( 
+   		 ( ( administrator_id IS NOT NULL ) AND ( pracownik_id IS NULL ) AND ( kierownik_id IS NULL ) )
+             OR ( ( kierownik_id IS NOT NULL ) AND ( administrator_id IS NULL ) AND ( pracownik_id IS NULL ) ) 
+             OR ( ( pracownik_id IS NOT NULL ) AND ( kierownik_id IS NULL ) AND ( administrator_id IS NULL )  )),
     CONSTRAINT uzytkownik_pk PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS zamowienie (
-    id      		INT NOT NULL,
+    id      		INT NOT NULL AUTO_INCREMENT,
     koszt              INT NOT NULL,
     CONSTRAINT zamowienie_pk PRIMARY KEY (id)
 );
 
 -- foreign keys constraints
 ALTER TABLE administrator
-    ADD CONSTRAINT administrator_uzytkownik_fk FOREIGN KEY ( id )
+    ADD CONSTRAINT administrator_uzytkownik_fk FOREIGN KEY ( uzytkownik_id )
         REFERENCES uzytkownik ( id );
 
 ALTER TABLE budynek
@@ -225,7 +238,7 @@ ALTER TABLE dostepnosc_sprzetu
         REFERENCES sprzet ( id );
 
 ALTER TABLE kierownik
-    ADD CONSTRAINT kierownik_uzytkownik_fk FOREIGN KEY ( id )
+    ADD CONSTRAINT kierownik_uzytkownik_fk FOREIGN KEY ( uzytkownik_id )
         REFERENCES uzytkownik ( id );
 
 ALTER TABLE komorka_organizacyjna
@@ -245,7 +258,7 @@ ALTER TABLE pracownik
         REFERENCES komorka_organizacyjna ( id );
 
 ALTER TABLE pracownik
-    ADD CONSTRAINT pracownik_uzytkownik_fk FOREIGN KEY ( id )
+    ADD CONSTRAINT pracownik_uzytkownik_fk FOREIGN KEY ( uzytkownik_id )
         REFERENCES uzytkownik ( id );
 
 ALTER TABLE produkt_spozywczy
@@ -291,3 +304,15 @@ ALTER TABLE sala
 ALTER TABLE sprzet
     ADD CONSTRAINT sprzet_rodzaj_sprzetu_fk FOREIGN KEY ( rodzaj_sprzetu_id )
         REFERENCES rodzaj_sprzetu ( id );
+        
+ALTER TABLE uzytkownik
+    ADD CONSTRAINT uzytkownik_administrator_fk FOREIGN KEY ( administrator_id )
+        REFERENCES administrator ( id );
+        
+ALTER TABLE uzytkownik
+    ADD CONSTRAINT uzytkownik_kierownik_fk FOREIGN KEY ( kierownik_id )
+        REFERENCES kierownik ( id );
+        
+ALTER TABLE uzytkownik
+    ADD CONSTRAINT uzytkownik_pracownik_fk FOREIGN KEY ( pracownik_id )
+        REFERENCES pracownik ( id );
