@@ -1,6 +1,7 @@
 Skrypt create_db.sql
 - usuwa jeśli istnieje bazę danych bd2
 - tworzy bazę bd2, a w niej tabele, klucze główne i obce oraz ograniczenia unique
+- Wykonuje się kilka minut, trzeba mieć do niego cierpliwość
 
 Uwagi co do samej bazy
 - nieco inna konwencja nazewnictwa w stosunku do modelu relacyjnego - kolumny odnoszące się do klucza obcego nazywają się <tablename>.<primarykey>, klucze uprzednie nazywające się id_[sth] nazywają się teraz po prostu id, dla uproszczenia; usunęłam polskie znaki diakryczne

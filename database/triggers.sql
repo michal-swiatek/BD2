@@ -1,5 +1,6 @@
 DROP TRIGGER IF EXISTS denormalizacja_koszt_ins;
 
+-- used to update column koszt in tables rezerwacja and zamowienie, when new pozycja is inserted
 CREATE TRIGGER denormalizacja_koszt_ins AFTER INSERT ON pozycja 
 FOR EACH ROW
 BEGIN
@@ -11,6 +12,7 @@ END //
 
 DROP TRIGGER IF EXISTS denormalizacja_koszt_up//
 
+-- used to update column koszt in tables rezerwacja and zamowienie, when rows in table pozycja are updated
 CREATE TRIGGER denormalizacja_koszt_up BEFORE UPDATE ON pozycja
 FOR EACH ROW
 BEGIN
