@@ -16,9 +16,10 @@ mydb = mysql.connector.connect(
 my_cursor = mydb.cursor()
 
 users_data = pd.read_csv('data/users.csv')
-cities = pd.read_csv('data/cities.csv')
+# cities = pd.read_csv('data/cities.csv')
 product_categories = pd.read_csv('data/product_categories.csv')
 companies_data = pd.read_csv('data/companies.csv')
+buildings_data = pd.read_csv('data/buildings.csv')
 
 admins = 160
 managers = 40
@@ -41,18 +42,10 @@ def contact_type_generator(cursor):
 contact_type_generator(my_cursor)
 print("Inserted Contact Types")
 
-def cities_generator(cursor, data: pd.DataFrame):
 
-    for row in data.iterrows():
-        
-        city = row[1]['city']
 
-        cursor.execute(f'INSERT INTO miasto (nazwa) VALUES ("{city}")')
-
-    cursor.execute('COMMIT;')
-
-cities_generator(my_cursor, cities)
-print("Loaded Cities")
+# cities_generator(my_cursor, cities)
+# print("Loaded Cities")
 
 def product_cat_generator(cursor, data: pd.DataFrame):
 
@@ -115,7 +108,7 @@ def users_generator(cursor, data: pd.DataFrame):
         # Contact Insertion
         cursor.execute(f'INSERT INTO dane_kontaktowe (kontakt, typ_kontaktu_typ, firma_cateringowa_id, uzytkownik_id) VALUES ("{contact}", "{contact_type}", NULL, "{user_id}")')
 
-        if i % 100 == 0:
+        if i % 1000 == 0:
             print(i)
         i += 1
 
@@ -172,19 +165,63 @@ companies_generator(my_cursor, companies_data)
 print("Inserted Companies")
 
 
+def buildings_generator(cursor, data):
 
-def contact_data_generator(cursor, data: pd.DataFrame):
-    
-    for row in data:
-
+    inserted_cities = set()
+    i = 0
+    for row in data.iterrows():
+        
         row_data = row[1]
 
+        name = f'building_{i}'
+        post_code = row_data['postcode']
+        street = row_data['street']
+        number = row_data['number']
+        city = row_data['city']
 
-        pass
+
+        # cities.add(city)
+        if city not in inserted_cities:
+            cursor.execute(f'INSERT INTO miasto(nazwa) VALUES ("{city}")')
+            inserted_cities.add(city)
+        
+        cursor.execute(f'SELECT * FROM miasto WHERE nazwa = "{city}"')
+
+        city_id = cursor.fetchall()[0][0]
+
+        cursor.execute(f'INSERT INTO budynek(nazwa, ulica, numer, kod_pocztowy, miasto_id) VALUES ("{name}", "{street}", {number}, "{post_code}", {city_id})')
+        
+        if i % 1000 == 0:
+            print(i)
+        i += 1
+    cursor.execute("COMMIT;")
+
+buildings_generator(my_cursor, buildings_data)
+print('Inserted Buildings')
+
+def rooms_generator(cursor):
+
+    num_rooms = 1000
+    # Max id budynku
+    cursor.execute('SELECT MAX(id) FROM budynek')
+    max_id_budynku = cursor.fetchall()[0][0]
+
+    for i in range(num_rooms):
+
+        # THINK OF BETTER VALUES THERE
+        area = np.random.randint(50, 100)
+        
+        room_number = np.random.uniform(5)
+
+        id_bud = np.random.randint(max_id_budynku)
+
+        sitting_places = int(area * 0.4)
+        standing_places = int(area * 1.5)
+
+        cursor.execute(f"INSERT INTO sala(powierzchnia, numer_sali, budynek_id, miejsca_siedzace, miejsca_stojace) VALUES({area}, {room_number}, {id_bud}, {sitting_places}, {standing_places})")
+        
+    cursor.execute('COMMIT;')
 
 
-
-
-
-
-# contact_generator(my_cursor, users_data)
+rooms_generator(my_cursor)
+print("Inserted Rooms")
