@@ -2,7 +2,7 @@ from flask import render_template, flash, redirect, url_for
 
 from application import app
 from application.forms import RegistrationForm, LoginForm
-from application.database import validate_user, create_account
+from application.database import validate_user, create_account, logout as db_logout
 
 @app.route('/')
 @app.route('/home')
@@ -17,6 +17,12 @@ def login():
         return redirect(url_for('home'))
 
     return render_template("login.html", title="Login", form=form)
+
+@app.route('/logout')
+def logout():
+    db_logout()
+    flash(f"Successfully logged out!", "success")
+    return redirect(url_for('home'))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():

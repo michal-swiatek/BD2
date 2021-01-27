@@ -9,6 +9,9 @@ cursor = db.cursor()
 
 logged_as = None
 
+def logout():
+    logged_as = None
+
 def validate_user(login, password):
     global logged_as
 
@@ -16,7 +19,7 @@ def validate_user(login, password):
     hasher.update(bytes(password.data, encoding='utf-8'))
 
     cursor.execute(f'SELECT hash_hasla FROM bd2.uzytkownik WHERE login = "{login.data}"')
-    db_password = cursor.fetchone()
+    db_password = cursor.fetchall()[1][0]
 
     valid = db_password == hasher.hexdigest()
 
@@ -36,10 +39,11 @@ def validate_user(login, password):
 def create_account(name, surname, login, mail, role):
     # Generate password and its hash
     letters = string.ascii_lowercase
-    password = ''.join(random.choice(letters) for i in range(10))
+    password = ''.join(random.choice(letters) for i in range(1))
 
     hasher = hashlib.sha3_224()
-    hasher.update(bytes(password, encoding='utf-8'))
+    hasher.update(bytes(str(password), encoding='utf-8'))
+    hashed_password = hasher.hexdigest()
 
     # Get max_user_id
     cursor.execute(f'SELECT MAX(id) FROM bd2.uzytkownik')
@@ -52,21 +56,21 @@ def create_account(name, surname, login, mail, role):
         cursor.execute(f'SELECT MAX(id) FROM bd2.pracownik')
         subtype_id = cursor.fetchone()[0]
 
-        cursor.execute(f'INSERT INTO bd2.uzytkownik(imie, nazwisko, login, hash_hasla, pracownik_id) VALUES("{name}","{surname}", "{login}", "{hasher.hexdigest()}", "{subtype_id}")')
+        cursor.execute(f'INSERT INTO bd2.uzytkownik(imie, nazwisko, login, hash_hasla, pracownik_id) VALUES("{name}","{surname}", "{login}", "{hashed_password}", "{subtype_id}")')
     elif role == 'm':
         cursor.execute(f'INSERT INTO bd2.kierownik(id) VALUES("{id}")')
 
         cursor.execute(f'SELECT MAX(id) FROM bd2.kierownik')
         subtype_id = cursor.fetchone()[0]
 
-        cursor.execute(f'INSERT INTO bd2.uzytkownik(imie, nazwisko, login, hash_hasla, kierownik_id) VALUES("{name}","{surname}", "{login}", "{hasher.hexdigest()}", "{subtype_id}")')
+        cursor.execute(f'INSERT INTO bd2.uzytkownik(imie, nazwisko, login, hash_hasla, kierownik_id) VALUES("{name}","{surname}", "{login}", "{hashed_password}", "{subtype_id}")')
     elif role == 'a':
         cursor.execute(f'INSERT INTO bd2.administrator(id) VALUES("{id}")')
 
         cursor.execute(f'SELECT MAX(id) FROM bd2.administrator')
         subtype_id = cursor.fetchone()[0]
 
-        cursor.execute(f'INSERT INTO bd2.uzytkownik(imie, nazwisko, login, hash_hasla, administrator_id) VALUES("{name}","{surname}", "{login}", "{hasher.hexdigest()}", "{subtype_id}")')
+        cursor.execute(f'INSERT INTO bd2.uzytkownik(imie, nazwisko, login, hash_hasla, administrator_id) VALUES("{name}","{surname}", "{login}", "{hashed_password}", "{subtype_id}")')
 
     # Get contact type
     cursor.execute(f'SELECT * FROM bd2.typ_kontaktu')
