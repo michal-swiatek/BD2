@@ -5,7 +5,7 @@ USE bd2;
 
 -- create tables, add unique and primary key constraints
 CREATE TABLE IF NOT EXISTS administrator (
-    id INT NOT NULL AUTO_INCREMENT,
+    id INT NOT NULL,
     -- uzytk_id INT NOT NULL,
     CONSTRAINT admin_pk PRIMARY KEY( id )
 );
@@ -27,9 +27,9 @@ CREATE TABLE IF NOT EXISTS dane_kontaktowe (
     firma_cateringowa_id  	INT,
     uzytkownik_id   		INT,
     CONSTRAINT dane_kontaktowe_pk PRIMARY KEY (id),
-    -- CONSTRAINT arc_dane CHECK( 
---    		 ( ( firma_cateringowa_id IS NOT NULL ) AND ( uzytkownik_id IS NULL ) )
---              OR ( ( uzytkownik_id IS NOT NULL ) AND ( firma_cateringowa_id IS NULL ) ) ),
+    CONSTRAINT arc_dane CHECK(
+  		 ( ( firma_cateringowa_id IS NOT NULL ) AND ( uzytkownik_id IS NULL ) )
+             OR ( ( uzytkownik_id IS NOT NULL ) AND ( firma_cateringowa_id IS NULL ) ) ),
     CONSTRAINT dane_unique UNIQUE ( kontakt, typ_kontaktu_typ )
 );
 
@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS firma_cateringowa (
 );
 
 CREATE TABLE IF NOT EXISTS kierownik (
-    id 		INT NOT NULL AUTO_INCREMENT,
+    id 		INT NOT NULL,
     -- uzytk_id INT NOT NULL,
     CONSTRAINT kierownik_pk PRIMARY KEY (id)
 );
@@ -103,9 +103,9 @@ CREATE TABLE IF NOT EXISTS pozycja (
 
 
 CREATE TABLE IF NOT EXISTS pracownik (
-    id                        INT NOT NULL AUTO_INCREMENT,
+    id                        INT,
     -- uzytk_id					INT NOT NULL,
-    komorka_organizacyjna_id  INT NOT NULL, 
+    komorka_organizacyjna_id  INT,
     CONSTRAINT pracownik_pk PRIMARY KEY (id)
 );
 
@@ -181,19 +181,18 @@ CREATE TABLE IF NOT EXISTS typ_kontaktu (
 
 
 CREATE TABLE IF NOT EXISTS uzytkownik (
-    id          INT NOT NULL AUTO_INCREMENT,
+    id          INT NOT NULL,
     imie        VARCHAR(60) NOT NULL,
     nazwisko    VARCHAR(100) NOT NULL,
     login       VARCHAR(40) NOT NULL,
     hash_hasla  VARCHAR(64) NOT NULL,
-    funkcja		VARCHAR(3) NOT NULL,
     administrator_id INT,
     pracownik_id INT,
     kierownik_id INT, 
---     CONSTRAINT arc_uzytkownik CHECK( 
---    		 ( ( administrator_id IS NOT NULL ) AND ( pracownik_id IS NULL ) AND ( kierownik_id IS NULL ) )
---              OR ( ( kierownik_id IS NOT NULL ) AND ( administrator_id IS NULL ) AND ( pracownik_id IS NULL ) ) 
---              OR ( ( pracownik_id IS NOT NULL ) AND ( kierownik_id IS NULL ) AND ( administrator_id IS NULL )  )),
+     CONSTRAINT arc_uzytkownik CHECK(
+    		 ( ( administrator_id IS NOT NULL ) AND ( pracownik_id IS NULL ) AND ( kierownik_id IS NULL ) )
+              OR ( ( kierownik_id IS NOT NULL ) AND ( administrator_id IS NULL ) AND ( pracownik_id IS NULL ) )
+              OR ( ( pracownik_id IS NOT NULL ) AND ( kierownik_id IS NULL ) AND ( administrator_id IS NULL )  )),
     CONSTRAINT uzytkownik_pk PRIMARY KEY (id),
     CONSTRAINT administrator_fk_un UNIQUE (administrator_id),
     CONSTRAINT kierownik_fk_un UNIQUE (kierownik_id),

@@ -1,0 +1,146 @@
+name,category,price
+Coke,Napoje,3.49
+Fanta,Napoje,3.49
+Sprite,Napoje,3.49
+7-up,Napoje,3.99
+Lipton Ice Tea,Napoje,3.49
+Cynamonka,Wypieki,2.99
+Chleb wiejski,Wypieki,2.49
+Ciabatta,Wypieki,0.79
+Tortilla Wraps,Wypieki,5.99
+Croissant,Wypieki,1.35
+Filety z Makreli,Konserwy i konfitury,3.99
+Maslo Orzechowe,Konserwy i konfitury,4.49
+Nutella,Konserwy i konfitury,16.99
+Pesto,Konserwy i konfitury,8.49
+Tunczyk w masle,Konserwy i konfitury,4.99
+Konserwowa kukurydza,Konserwy i konfitury,1.99
+Sok pomidorowy,Sok,3.49
+Sok jablkowy,Sok,3.49
+Sok pomaranczowy,Sok,3.99
+Sok z granatu,Sok,8.99
+Sok z Brzozy,Sok,8.49
+Stout,Piwo,5.49
+Porter,Piwo,4.49
+Red Ale,Piwo,4.49
+Pale Ale,Piwo,4.49
+India Pale Ale,Piwo,4.99
+Lager,Piwo,3.99
+Pilsner,Piwo,3.99
+Champagne,Wino,12.99
+Grenache,Wino,35.99
+Cabernet Sauvignon,Wino,29.99
+Merlot,Wino,21.99
+Pinot Noir,Wino,24.99
+Chardonnay,Wino,23.99
+Sauvignon Blanc,Wino,27.99
+Moscato,Wino,34.99
+Sherry,Wino,49.99
+Calvados,Alcohol,139.99
+Cognac,Alkohol,209.99
+Armagnac,Alkohol,199.99
+Grappa,Alkohol,79.99
+Schnapps,Alkohol,79.99
+Whiskey,Alkohol,79.99
+Gin,Alkohol,69.99
+Rakija,Alkohol,39.99
+Brandy,Alkohol,57.99
+Absinthe,Alkohol,89.99
+Groszek zielony,Mrozonki,2.49
+Szpinak,Mrozonki,2.49
+Frytki,Mrozonki,8.99
+Fasolka szparagowa,Mrozonki,4.99
+Kalafior Mrozony,Mrozonki,2.99
+Gouda,Ser,19.99
+Radamer,Ser,17.99
+Camembert,Ser,3.49
+Brie,Ser,3.49
+Edam,Ser,18.99
+Lopatka Wieprzowa 1kg,Mieso Czerwone,22.99
+Zeberka wieprzowe 1kg,Mieso Czerwone,24.99
+Lopatka Wolowa 1kg,Mieso Czerwone,29.99
+Poledwica Wolowa 1kg,Mieso Czerwone,35.99
+Jagniecina 1kg,Mieso Czerwone,35.99
+Filet z Kurczaka 1kg,Drob,16.99
+Udo z Kurczaka 1kg,Drob,15.99
+Skrzydelka z Kurczaka 1kg,Drob,17.99
+Mieso z indyka na kotlety 1kg,Drob,15.99
+Sznycel z indyka 1kg,Drob,17.99
+Krewetki 1kg,Seafood,17.99
+Mule 1kg,Seafood,13.99
+Losos Wedzony 1kg,Owoce Morza,56.99
+Filety ze Sledzia 1kg,Owoce Morza,12.99
+Mrozona Osmiornica 1kg,Owoce Morza,29.99
+Surimi,Owoce Morza,8
+Stek z Tunczyka 1kg,Owoce Morza,50
+Smietana,Nabial,3.99
+Mleko,Nabial,2.29
+Yogurt typu greckiego,Nabial,1.69
+Skyr,Nabial,2.19
+Maslo,Nabial,4.49
+Oreo,Ciastka,5.99
+Delicje,Ciastka,4.49
+Hit,Ciastka,4.99
+Kruszynki,Ciastka,3.99
+Knoppers,Ciastka,2.99
+Alpen Gold,Czekolada,2.79
+Milka,Czekolada,3.99
+Wedel,Czekolada,3.49
+Wawel,Czekolada,3.29
+Lindt,Czekolada,8.49
+Chupa Chups,Przekaski slodkie,1.99
+Zelki Haribo,Przekaski slodkie,5.99
+M&M's,Przekaski slodkie,4.99
+Toffifee,Przekaski slodkie,8.99
+Prince Polo,Przekaski slodkie,1.69
+Oreo,Lody,4.69
+Magnum,Lody,4.99
+Big Milk,Lody,1.99
+Manhattan,Lody,12.99
+Carte D'or,Lody,13.99
+Bambino,Lody,3.99
+Spaghetti,Pasta,6.99
+Rigatoni,Pasta,6.99
+Cannelloni,Pasta,7.99
+Fettuccine,Pasta,7.99
+Tagliatelle,Pasta,7.99
+Farfalle,Pasta,5.99
+Penne,Pasta,5.99
+Lasagne,Pasta,8.99
+Ravioli,Pasta,9.99
+Fusilli,Pasta,5.99
+Linguine,Pasta,6.99
+Earl Grey,Towary Suche,15.99
+English Breakfast,Towary Suche,15.99
+Hojicha,Towary Suche,16.99
+Oolong,Towary Suche,16.99
+Bancha,Towary Suche,16.99
+Chili Flakes,Towary Suche,3.99
+Kawa,Towary Suche,19.99
+Kakao,Towary Suche,10.99
+Ryz,Kasze,2.99
+Kasza Gryczana,Kasze,3.49
+Bulgur,Kasze,2.99
+Jablko,Owoce,5.99
+Pomarancza,Owoce,6.99
+Kiwi,Owoce,14.99
+Winogrono,Owoce,16.99
+Avokado,Owoce,24.99
+Banan,Owoce,4.99
+Malina,Owoce,15.99
+Jagoda,Owoce,16.99
+Truskawka,Owoce,16.99
+Mango,Owoce,9.99
+Gruszka,Owoce,4.99
+Pomidor,Warzywa,7.99
+Ogorek,Warzywa,6.99
+Baklazan,Warzywa,6.99
+Cukinia,Warzywa,6.99
+Papryka,Warzywa,9.99
+Natka Pietruszki,Warzywa,5.99
+Rukola,Warzywa,5.99
+Bazylia,Warzywa,8.99
+Cebula,Warzywa,1.99
+Marchew,Warzywa,2.49
+Seler,Warzywa,4.99
+Imbir,Warzywa,16.99
