@@ -29,7 +29,10 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         password = create_account(form.name.data, form.surname.data, form.login.data, form.email.data, form.role.data)
-        flash(f"Account created for {form.login.data}! Password set to: {password}", "success")
+        if password is not None:
+            flash(f"Account created for {form.login.data}! Password set to: {password}", "success")
+        else:
+            flash(f"Only admins can create accounts!", "info")
         return redirect(url_for('home'))
 
     return render_template("register.html", title="Register", form=form)

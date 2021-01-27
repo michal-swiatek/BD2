@@ -5,7 +5,7 @@ import string
 import random
 
 db = connector.connect(host="localhost", user="root", password="w?Kf+DX2at3Wmroz")
-cursor = db.cursor()
+cursor = db.cursor(buffered=True)
 
 logged_as = None
 
@@ -14,6 +14,8 @@ def logout():
 
 def validate_user(login, password):
     global logged_as
+
+    logout()
 
     hasher = hashlib.sha3_224()
     hasher.update(bytes(password.data, encoding='utf-8'))
@@ -37,49 +39,52 @@ def validate_user(login, password):
     return valid
 
 def create_account(name, surname, login, mail, role):
-    # Generate password and its hash
-    letters = string.ascii_lowercase
-    password = ''.join(random.choice(letters) for i in range(1))
+    if logged_as is 'a':
+        # Generate password and its hash
+        letters = string.ascii_lowercase
+        password = ''.join(random.choice(letters) for i in range(10))
 
-    hasher = hashlib.sha3_224()
-    hasher.update(bytes(str(password), encoding='utf-8'))
-    hashed_password = hasher.hexdigest()
+        hasher = hashlib.sha3_224()
+        hasher.update(bytes(str(password), encoding='utf-8'))
+        hashed_password = hasher.hexdigest()
 
-    # Get max_user_id
-    cursor.execute(f'SELECT MAX(id) FROM bd2.uzytkownik')
-    id = cursor.fetchone()[0]
+        # Get max_user_id
+        cursor.execute(f'SELECT MAX(id) FROM bd2.uzytkownik')
+        id = cursor.fetchall()[0][0]
 
-    # Insert subtype and type
-    if role == 'w':
-        cursor.execute(f'INSERT INTO bd2.pracownik(id) VALUES("{id}")')
+        # Insert subtype and type
+        if role == 'w':
+            cursor.execute(f'INSERT INTO bd2.pracownik(id) VALUES("{id}")')
 
-        cursor.execute(f'SELECT MAX(id) FROM bd2.pracownik')
-        subtype_id = cursor.fetchone()[0]
+            cursor.execute(f'SELECT MAX(id) FROM bd2.pracownik')
+            subtype_id = cursor.fetchall()[0][0]
 
-        cursor.execute(f'INSERT INTO bd2.uzytkownik(imie, nazwisko, login, hash_hasla, pracownik_id) VALUES("{name}","{surname}", "{login}", "{hashed_password}", "{subtype_id}")')
-    elif role == 'm':
-        cursor.execute(f'INSERT INTO bd2.kierownik(id) VALUES("{id}")')
+            cursor.execute(f'INSERT INTO bd2.uzytkownik(imie, nazwisko, login, hash_hasla, pracownik_id) VALUES("{name}","{surname}", "{login}", "{hashed_password}", "{subtype_id}")')
+        elif role == 'm':
+            cursor.execute(f'INSERT INTO bd2.kierownik(id) VALUES("{id}")')
 
-        cursor.execute(f'SELECT MAX(id) FROM bd2.kierownik')
-        subtype_id = cursor.fetchone()[0]
+            cursor.execute(f'SELECT MAX(id) FROM bd2.kierownik')
+            subtype_id = cursor.fetchall()[0][0]
 
-        cursor.execute(f'INSERT INTO bd2.uzytkownik(imie, nazwisko, login, hash_hasla, kierownik_id) VALUES("{name}","{surname}", "{login}", "{hashed_password}", "{subtype_id}")')
-    elif role == 'a':
-        cursor.execute(f'INSERT INTO bd2.administrator(id) VALUES("{id}")')
+            cursor.execute(f'INSERT INTO bd2.uzytkownik(imie, nazwisko, login, hash_hasla, kierownik_id) VALUES("{name}","{surname}", "{login}", "{hashed_password}", "{subtype_id}")')
+        elif role == 'a':
+            cursor.execute(f'INSERT INTO bd2.administrator(id) VALUES("{id}")')
 
-        cursor.execute(f'SELECT MAX(id) FROM bd2.administrator')
-        subtype_id = cursor.fetchone()[0]
+            cursor.execute(f'SELECT MAX(id) FROM bd2.administrator')
+            subtype_id = cursor.fetchall()[0][0]
 
-        cursor.execute(f'INSERT INTO bd2.uzytkownik(imie, nazwisko, login, hash_hasla, administrator_id) VALUES("{name}","{surname}", "{login}", "{hashed_password}", "{subtype_id}")')
+            cursor.execute(f'INSERT INTO bd2.uzytkownik(imie, nazwisko, login, hash_hasla, administrator_id) VALUES("{name}","{surname}", "{login}", "{hashed_password}", "{subtype_id}")')
 
-    # Get contact type
-    cursor.execute(f'SELECT * FROM bd2.typ_kontaktu')
-    type = cursor.fetchall()[0][0]
+        # Get contact type
+        cursor.execute(f'SELECT * FROM bd2.typ_kontaktu')
+        type = cursor.fetchall()[0][0]
 
-    # Insert contact
-    cursor.execute(f'INSERT INTO bd2.dane_kontaktowe (kontakt, typ_kontaktu_typ, firma_cateringowa_id, uzytkownik_id) VALUES ("{mail}", "{type}", NULL, "{id}")')
+        # Insert contact
+        cursor.execute(f'INSERT INTO bd2.dane_kontaktowe (kontakt, typ_kontaktu_typ, firma_cateringowa_id, uzytkownik_id) VALUES ("{mail}", "{type}", NULL, "{id}")')
 
-    cursor.execute("commit;")
+        cursor.execute("commit;")
 
-    # Return generated password
-    return password
+        # Return generated password
+        return password
+    else:
+        return None
