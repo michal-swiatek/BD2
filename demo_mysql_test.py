@@ -6,8 +6,8 @@ import hashlib
 
 mydb = mysql.connector.connect(
     host='localhost',
-    user='bd2app',
-    password='passwd',
+    user='root',
+    password='w?Kf+DX2at3Wmroz',
     database='bd2'
 )
 print("connected!\n")
@@ -91,13 +91,13 @@ def users_generator(cursor, data: pd.DataFrame):
         hash_passwd = hasher.hexdigest()
         if tickets[i] == 'adm':
             cursor.execute(
-                f'INSERT INTO uzytkownik(id, imie, nazwisko, login, hash_hasla, administrator_id) VALUES("{i}","{name}","{surname}", "{login}", "{hash_passwd}", "{i}")')
+                f'INSERT INTO uzytkownik(imie, nazwisko, login, hash_hasla, administrator_id) VALUES("{name}","{surname}", "{login}", "{hash_passwd}", "{i}")')
         elif tickets[i] == 'krw':
             cursor.execute(
-                f'INSERT INTO uzytkownik(id, imie, nazwisko, login, hash_hasla, kierownik_id) VALUES("{i}","{name}", "{surname}", "{login}", "{hash_passwd}", "{i}")')
+                f'INSERT INTO uzytkownik(imie, nazwisko, login, hash_hasla, kierownik_id) VALUES("{name}", "{surname}", "{login}", "{hash_passwd}", "{i}")')
         else:
             cursor.execute(
-                f'INSERT INTO uzytkownik(id, imie, nazwisko, login, hash_hasla, pracownik_id) VALUES("{i}","{name}", "{surname}", "{login}", "{hash_passwd}", "{i}")')
+                f'INSERT INTO uzytkownik(imie, nazwisko, login, hash_hasla, pracownik_id) VALUES("{name}", "{surname}", "{login}", "{hash_passwd}", "{i}")')
 
         # values = cursor.fetchall()
 

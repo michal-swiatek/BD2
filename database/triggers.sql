@@ -1,3 +1,7 @@
+USE bd2;
+
+delimiter //
+
 DROP TRIGGER IF EXISTS denormalizacja_koszt_ins;
 
 -- used to update column koszt in tables rezerwacja and zamowienie, when new pozycja is inserted
@@ -31,3 +35,5 @@ BEGIN
 	UPDATE zamowienie z SET z.koszt = z.koszt - temp * OLD.liczba WHERE OLD.zamowienie_id = z.id;
 	UPDATE rezerwacja r SET r.koszt = r.koszt - temp * OLD.liczba WHERE r.zamowienie_id = OLD.zamowienie_id;
 END //
+
+delimiter ;

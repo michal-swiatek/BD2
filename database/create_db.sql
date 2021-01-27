@@ -181,7 +181,7 @@ CREATE TABLE IF NOT EXISTS typ_kontaktu (
 
 
 CREATE TABLE IF NOT EXISTS uzytkownik (
-    id          INT NOT NULL,
+    id          INT NOT NULL AUTO_INCREMENT,
     imie        VARCHAR(60) NOT NULL,
     nazwisko    VARCHAR(100) NOT NULL,
     login       VARCHAR(40) NOT NULL,
