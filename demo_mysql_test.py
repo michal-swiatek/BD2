@@ -9,7 +9,7 @@ import hashlib
 mydb = mysql.connector.connect(
     host='localhost',
     user='root',
-    password='1234321',
+    password='w?Kf+DX2at3Wmroz',
     database='bd2'
 )
 
@@ -19,7 +19,7 @@ users_data = pd.read_csv('data/users.csv')
 # cities = pd.read_csv('data/cities.csv')
 product_categories = pd.read_csv('data/product_categories.csv')
 companies_data = pd.read_csv('data/companies.csv')
-buildings_data = pd.read_csv('data/buildings.csv')
+# buildings_data = pd.read_csv('data/buildings.csv')
 
 admins = 160
 managers = 40
@@ -196,32 +196,32 @@ def buildings_generator(cursor, data):
         i += 1
     cursor.execute("COMMIT;")
 
-buildings_generator(my_cursor, buildings_data)
+# buildings_generator(my_cursor, buildings_data)
 print('Inserted Buildings')
 
-def rooms_generator(cursor):
+# def rooms_generator(cursor):
+#
+#     num_rooms = 1000
+#     # Max id budynku
+#     cursor.execute('SELECT MAX(id) FROM budynek')
+#     max_id_budynku = cursor.fetchall()[0][0]
+#
+#     for i in range(num_rooms):
+#
+#         # THINK OF BETTER VALUES THERE
+#         area = np.random.randint(50, 100)
+#
+#         room_number = np.random.uniform(5)
+#
+#         id_bud = np.random.randint(max_id_budynku)
+#
+#         sitting_places = int(area * 0.4)
+#         standing_places = int(area * 1.5)
+#
+#         cursor.execute(f"INSERT INTO sala(powierzchnia, numer_sali, budynek_id, miejsca_siedzace, miejsca_stojace) VALUES({area}, {room_number}, {id_bud}, {sitting_places}, {standing_places})")
+#
+#     cursor.execute('COMMIT;')
 
-    num_rooms = 1000
-    # Max id budynku
-    cursor.execute('SELECT MAX(id) FROM budynek')
-    max_id_budynku = cursor.fetchall()[0][0]
 
-    for i in range(num_rooms):
-
-        # THINK OF BETTER VALUES THERE
-        area = np.random.randint(50, 100)
-        
-        room_number = np.random.uniform(5)
-
-        id_bud = np.random.randint(max_id_budynku)
-
-        sitting_places = int(area * 0.4)
-        standing_places = int(area * 1.5)
-
-        cursor.execute(f"INSERT INTO sala(powierzchnia, numer_sali, budynek_id, miejsca_siedzace, miejsca_stojace) VALUES({area}, {room_number}, {id_bud}, {sitting_places}, {standing_places})")
-        
-    cursor.execute('COMMIT;')
-
-
-rooms_generator(my_cursor)
+# rooms_generator(my_cursor)
 print("Inserted Rooms")
