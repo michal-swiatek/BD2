@@ -299,6 +299,14 @@ def add_misc(cursor):
         cursor.execute(f'INSERT INTO produkt_spozywczy(cena, max_zamowienie, firma_cateringowa_id, opis) VALUES("{price}", "{max_zam}", "{comp}", "{name}") ')
     cursor.execute("COMMIT;")
 
+    cursor.execute("SELECT id FROM klasyfikacja_produktu")
+    klas = [x[0] for x in cursor.fetchall()]
+    cursor.execute("SELECT id FROM produkt_spozywczy")
+    prod = [x[0] for x in cursor.fetchall()]
+    for p in prod:
+        k = choice(klas)
+        cursor.execute(f'INSERT INTO przypisanie_produktu(produkt_spozywczy_id, klasyfikacja_produktu_id) VALUES ("{p}","{k}")')
+    cursor.execute("COMMIT;")
 
     obsluga = ["cleaning", "servers", "it support", "cameraperson"]
     for o in obsluga:
