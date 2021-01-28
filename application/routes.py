@@ -3,7 +3,7 @@ from flask import render_template, flash, redirect, url_for
 from application import app
 from application.forms import RegistrationForm, LoginForm
 from application.accounts import validate_user, create_account, db_login, db_logout
-from application.browse_offer import get_offer
+from application.browse_offer import get_catering_data
 
 @app.route('/')
 @app.route('/home')
@@ -12,10 +12,9 @@ def home():
 
 @app.route('/catering')
 def catering():
-    offer = get_offer()
-    print(offer)
+    catering_data = get_catering_data()
 
-    return render_template("catering.html", title="Catering", offer=offer)
+    return render_template("catering.html", title="Catering", catering_data=catering_data)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
