@@ -2,12 +2,20 @@ from flask import render_template, flash, redirect, url_for
 
 from application import app
 from application.forms import RegistrationForm, LoginForm
-from application.accounts import validate_user, create_account, db_login, db_logout, delete_account
+from application.accounts import validate_user, create_account, db_login, db_logout
+from application.browse_offer import get_offer
 
 @app.route('/')
 @app.route('/home')
 def home():
     return render_template("home.html", title="Login")
+
+@app.route('/catering')
+def catering():
+    offer = get_offer()
+    print(offer)
+
+    return render_template("catering.html", title="Catering", offer=offer)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

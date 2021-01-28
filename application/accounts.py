@@ -1,11 +1,8 @@
-import mysql.connector as connector
-
 import hashlib
 import string
 import random
 
-db = connector.connect(host="localhost", user="root", password="w?Kf+DX2at3Wmroz")
-cursor = db.cursor(buffered=True)
+from application import cursor
 
 logged_as = None
 logged_role = None
