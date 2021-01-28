@@ -8,6 +8,5 @@ def get_reservation_data():
     cursor.execute(f'select miasto.nazwa, budynek.nazwa, ulica, numer, kod_pocztowy, numer_sali, miejsca_siedzace, powierzchnia, bd2.sala.id FROM bd2.miasto, bd2.budynek, bd2.sala WHERE bd2.miasto.id = bd2.budynek.miasto_id AND bd2.budynek.id = bd2.sala.budynek_id')
     return cursor.fetchall()
 
-def make_reservation(room_id):
-    print("Reservation", room_id)
-    return
+# def get_catering_offer():
+#
