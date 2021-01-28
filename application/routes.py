@@ -2,7 +2,7 @@ from flask import render_template, flash, redirect, url_for
 
 from application import app
 from application.forms import RegistrationForm, LoginForm
-from application.database import validate_user, create_account, logout as db_logout
+from application.accounts import validate_user, create_account, db_login, db_logout, delete_account
 
 @app.route('/')
 @app.route('/home')
@@ -13,7 +13,8 @@ def home():
 def login():
     form = LoginForm()
     if form.validate_on_submit() and validate_user(form.login, form.password):
-        flash(f"Successfully logged in!", "success")
+        db_login(form.login)
+        flash(f"Successfully logged in as {form.login.data}!", "success")
         return redirect(url_for('home'))
 
     return render_template("login.html", title="Login", form=form)
@@ -33,6 +34,9 @@ def register():
             flash(f"Account created for {form.login.data}! Password set to: {password}", "success")
         else:
             flash(f"Only admins can create accounts!", "info")
+
+        # delete_account()
+
         return redirect(url_for('home'))
 
     return render_template("register.html", title="Register", form=form)
