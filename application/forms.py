@@ -10,7 +10,7 @@ class RegistrationForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
 
     role = RadioField('Role', choices=[('w', 'Worker'), ('m', 'Manager'), ('a', 'Administrator')])
-    department = IntegerField('Department id', validators=[NumberRange(0, 10)])
+    department = IntegerField('Department id', validators=[NumberRange(1, 10)])
 
     submit = SubmitField('Sign Up')
 
