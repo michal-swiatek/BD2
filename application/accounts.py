@@ -48,7 +48,7 @@ def generate_password(length):
 
     return password
 
-def create_account(name, surname, login, mail, role):
+def create_account(name, surname, login, mail, role, department):
     if logged_role == 'a':
         password = generate_password(10)
 
@@ -56,13 +56,16 @@ def create_account(name, surname, login, mail, role):
         hasher.update(bytes(str(password), encoding='utf-8'))
         hashed_password = hasher.hexdigest()
 
+        if department is None:
+            department = 0
+
         # Get max_user_id
         cursor.execute(f'SELECT MAX(id) FROM bd2.uzytkownik')
         id = cursor.fetchall()[0][0]
 
         # Insert subtype and type
         if role == 'w':
-            cursor.execute(f'INSERT INTO bd2.pracownik(id) VALUES("{id}")')
+            cursor.execute(f'INSERT INTO bd2.pracownik (id, komorka_organizacyjna_id) VALUES("{id}", {department})')
 
             cursor.execute(f'SELECT MAX(id) FROM bd2.pracownik')
             subtype_id = cursor.fetchall()[0][0]

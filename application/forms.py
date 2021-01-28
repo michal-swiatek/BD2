@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, RadioField
-from wtforms.validators import DataRequired, Length, Email, EqualTo
+from wtforms import StringField, PasswordField, SubmitField, RadioField, IntegerField
+from wtforms.validators import DataRequired, Length, Email, NumberRange
 
 
 class RegistrationForm(FlaskForm):
@@ -10,6 +10,7 @@ class RegistrationForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
 
     role = RadioField('Role', choices=[('w', 'Worker'), ('m', 'Manager'), ('a', 'Administrator')])
+    department = IntegerField('Department id', validators=[NumberRange(0, 10)])
 
     submit = SubmitField('Sign Up')
 
