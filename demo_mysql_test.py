@@ -6,8 +6,8 @@ import hashlib
 
 mydb = mysql.connector.connect(
     host='localhost',
-    user='bd2app',
-    password='passwd',
+    user='root',
+    password='w?Kf+DX2at3Wmroz',
     database='bd2'
 )
 print("connected!\n")
@@ -36,8 +36,9 @@ print("set up")
 
 
 def contact_type_generator(cursor):
-    cursor.execute(f'INSERT INTO typ_kontaktu(typ) VALUES("email")')
-    cursor.execute(f'INSERT INTO typ_kontaktu(typ) VALUES("nr telefonu")')
+    # cursor.execute(f'INSERT INTO typ_kontaktu(typ) VALUES("email")')
+    # cursor.execute(f'INSERT INTO typ_kontaktu(typ) VALUES("nr telefonu")')
+    pass
 
 
 def product_cat_generator(cursor, data: pd.DataFrame):
