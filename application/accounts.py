@@ -37,7 +37,11 @@ def validate_user(login, password):
 
     cursor.execute(f'SELECT hash_hasla FROM bd2.uzytkownik WHERE login = "{login.data}"')
 
-    db_password = cursor.fetchall()[0][0]
+    temp = cursor.fetchall()
+    if len(temp) == 0:
+        return False
+
+    db_password = temp[0][0]
 
     return db_password == hasher.hexdigest()
 
