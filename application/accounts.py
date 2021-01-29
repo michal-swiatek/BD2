@@ -6,15 +6,18 @@ from application import cursor
 
 logged_as = None
 
+
 def set_inits():
     global logged_as, logged_role
 
     logged_role = None
     logged_as = None
 
+
 def get_logged_username():
     global logged_as
     return logged_as
+
 
 def db_login(login):
     global logged_as, logged_role
@@ -34,11 +37,13 @@ def db_login(login):
     elif result[2] is not None:
         logged_role = 'w'
 
+
 def db_logout():
     global logged_as, logged_role
 
     logged_as = None
     logged_role = None
+
 
 def validate_user(login, password):
     hasher = hashlib.sha3_224()
@@ -54,12 +59,14 @@ def validate_user(login, password):
 
     return db_password == hasher.hexdigest()
 
+
 def generate_password(length):
     # Generate password and its hash
     letters = string.ascii_lowercase
     password = ''.join(random.choice(letters) for i in range(length))
 
     return password
+
 
 def create_account(name, surname, login, mail, role, department):
     if logged_role == 'a':
@@ -78,7 +85,8 @@ def create_account(name, surname, login, mail, role, department):
 
         # Insert subtype and type
         if role == 'w':
-            cursor.execute(f'INSERT INTO bd2.pracownik (id, komorka_organizacyjna_id) VALUES("{user_id}", {department})')
+            cursor.execute(
+                f'INSERT INTO bd2.pracownik (id, komorka_organizacyjna_id) VALUES("{user_id}", {department})')
 
             cursor.execute(
                 f'INSERT INTO bd2.uzytkownik(imie, nazwisko, login, hash_hasla, pracownik_id) VALUES("{name}","{surname}", "{login}", "{hashed_password}", "{user_id}")')
@@ -133,13 +141,10 @@ def edit_account(name, surname, login, mail):
         cursor.execute(f'SELECT * FROM bd2.typ_kontaktu')
         type = cursor.fetchall()[0][0]
 
-        cursor.execute(
-            f'SELECT bd2.dane_kontaktowe.id FROM bd2.dane_kontaktowe, bd2.uzytkownik WHERE bd2.uzytkownik.login="{logged_as}" AND bd2.dane_kontaktowe.uzytkownik_id = bd2.uzytkownik.id')
-        id = cursor.fetchall()[0][0]
-
-        cursor.execute(f'UPDATE bd2.dane_kontaktowe SET kontakt="{mail}", typ_kontaktu_typ="{type}" WHERE id="{id}"')
+        cursor.execute(f'UPDATE bd2.dane_kontaktowe SET kontakt="{mail}", typ_kontaktu_typ="{type}" WHERE uzytkownik_id="{id}"')
 
         cursor.execute("commit;")
+
 
 def change_password(password):
     if logged_as is not None:
@@ -149,6 +154,7 @@ def change_password(password):
 
         cursor.execute(f'UPDATE bd2.uzytkownik SET hash_hasla="{hashed_password}"')
         cursor.execute("commit;")
+
 
 def delete_account(account_login=None):
     global logged_role

@@ -11,7 +11,7 @@ class MockLogin:
 
 
 class MyTestCase(unittest.TestCase):
-    admin_log = "admin"
+    admin_log = "test_main_admin"
     admin_pass = "123"
     admin_u_id = 0
     admin_id = 0
@@ -29,6 +29,8 @@ class MyTestCase(unittest.TestCase):
             f'INSERT INTO uzytkownik(imie, nazwisko, login, hash_hasla, administrator_id) VALUES ("test_admin", "test_admin", "{self.admin_log}", "{hash_pass}", "{self.admin_id}") ')
         cursor.execute(f'select id from uzytkownik where administrator_id = {self.admin_id}')
         self.admin_u_id = cursor.fetchall()[0][0]
+
+        cursor.execute(f'INSERT INTO dane_kontaktowe(kontakt, typ_kontaktu_typ,uzytkownik_id) VALUES ("test_admin@test.pl", "email", "{self.admin_u_id}")')
 
         cursor.execute("commit;")
         lg = MockLogin(self.admin_log)
@@ -137,6 +139,45 @@ class MyTestCase(unittest.TestCase):
         self.in_test_create_account_worker()
         self.in_test_create_account_manager()
         self.in_test_create_admin()
+        self.simpleCleanUp()
+
+    def test_change_password(self):
+        self.simpleInit()
+        newpassword = "kindarandompassword"
+        ac.change_password(newpassword)
+        hasher = hashlib.sha3_224()
+        hasher.update(bytes(str(newpassword), encoding='utf-8'))
+        hashed_password = hasher.hexdigest()
+
+        cursor.execute(f'SELECT hash_hasla from uzytkownik where id={self.admin_u_id}')
+        hash_in_db = cursor.fetchall()[0][0]
+
+        self.assertEqual(hashed_password, hash_in_db)
+
+        self.simpleCleanUp()
+
+    def test_edit_acccount(self):
+        self.simpleInit()
+        new_name = "test_new_name"
+        new_surname = "test_new_surname"
+        new_login = "test_new_login"
+        new_mail = "test_new_mail"
+        ac.edit_account(new_name, new_surname, new_login, new_mail)
+
+        cursor.execute(
+            f'SELECT kontakt from dane_kontaktowe where uzytkownik_id={self.admin_u_id}')
+        temp = cursor.fetchall()
+        db_mail = temp[0][0]
+
+        cursor.execute(f'SELECT imie, nazwisko, login from uzytkownik where id={self.admin_u_id}')
+        res = cursor.fetchone()
+        db_name = res[0]
+        db_surname = res[1]
+        db_login = res[2]
+        self.assertEqual(db_name, new_name)
+        self.assertEqual(db_surname, new_surname)
+        self.assertEqual(db_mail, new_mail)
+        self.assertEqual(db_login, new_login)
         self.simpleCleanUp()
 
 
