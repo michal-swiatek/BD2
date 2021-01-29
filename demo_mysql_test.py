@@ -4,10 +4,12 @@ import numpy as np
 from random import choice, randint
 import hashlib
 
+passwd = "1234321"
+
 mydb = mysql.connector.connect(
     host='localhost',
     user='root',
-    password='w?Kf+DX2at3Wmroz',
+    password=passwd,
     database='bd2'
 )
 print("connected!\n")
@@ -36,9 +38,11 @@ print("set up")
 
 
 def contact_type_generator(cursor):
-    # cursor.execute(f'INSERT INTO typ_kontaktu(typ) VALUES("email")')
-    # cursor.execute(f'INSERT INTO typ_kontaktu(typ) VALUES("nr telefonu")')
-    pass
+    my_cursor.execute(f'INSERT INTO typ_kontaktu(typ) VALUES("email")')
+    my_cursor.execute(f'INSERT INTO typ_kontaktu(typ) VALUES("nr telefonu")')
+
+
+
 
 
 def product_cat_generator(cursor, data: pd.DataFrame):
@@ -47,6 +51,8 @@ def product_cat_generator(cursor, data: pd.DataFrame):
         cursor.execute(f'INSERT INTO klasyfikacja_produktu (klasa) VALUES ("{categ}")')
 
     cursor.execute('COMMIT;')
+
+
 
 
 def sub_users_generator(cursor, data: pd.DataFrame):
@@ -122,6 +128,9 @@ def users_generator(cursor, data: pd.DataFrame):
     cursor.execute('COMMIT;')
 
 
+
+
+
 def companies_generator(cursor, data: pd.DataFrame):
     i = 0
     for row in data.iterrows():
@@ -164,7 +173,10 @@ def companies_generator(cursor, data: pd.DataFrame):
     cursor.execute('COMMIT;')
 
 
+
+
 def buildings_generator(cursor, data):
+
     inserted_cities = set()
     i = 0
     for row in data.iterrows():
@@ -176,6 +188,7 @@ def buildings_generator(cursor, data):
         street = row_data['street']
         number = row_data['number']
         city = row_data['city']
+
 
         # cities.add(city)
         if city not in inserted_cities:
@@ -195,11 +208,15 @@ def buildings_generator(cursor, data):
     cursor.execute("COMMIT;")
 
 
+
+
+
 def rooms_generator(cursor):
     num_rooms = 1000
     # Max id budynku
-    cursor.execute('SELECT MAX(id) FROM budynek')
-    max_id_budynku = cursor.fetchall()[0][0]
+    cursor.execute('SELECT id FROM budynek')
+    building_ids = [item[0] for item in cursor.fetchall()]
+
 
     for i in range(num_rooms):
         # THINK OF BETTER VALUES THERE
@@ -207,7 +224,9 @@ def rooms_generator(cursor):
 
         room_number = np.random.uniform(5)
 
-        id_bud = np.random.randint(max_id_budynku)
+        id_bud = np.random.choice(building_ids)
+
+        building_ids.remove(id_bud)
 
         sitting_places = int(area * 0.4)
         standing_places = int(area * 1.5)

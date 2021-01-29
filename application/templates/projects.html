@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h1>Hi there</h1>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            {% for header in headings %}
+            <th>{{ header }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in projects_data %}
+            <tr>
+                {% for cell in row %}
+                    <td>{{ cell }}</td>
+                {% endfor %}
+                <td>
+                    <button onclick="" class="btn btn-info">Reserve</button>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

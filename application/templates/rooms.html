@@ -1,0 +1,21 @@
+{% extends "list_layout.html" %}
+{% block content %}
+
+    <div class="container">
+        <h1 class="header center orange-text">{{ header }}</h1>
+        <h4 class="center light-blue-text">{{ sub_header }}</h4>
+
+        <p>Here are our rooms</p>
+        <ul class="collection with-header">
+            <li class="collection-header"><h4><b>{{ list_header }}</b></h4></li>
+
+
+            <!-- LOOPING THROUGH ROOMS HERE -->
+            {% for room in rooms %}
+                <li class="collection-item"><a href="#">{{ room }}</a></li>
+
+
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}
