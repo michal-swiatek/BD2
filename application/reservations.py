@@ -9,12 +9,10 @@ def get_reservations(start, end, room):
     return cursor.fetchall()
 
 
-def create_order(products, cost):
-    # Products: [(id, amount), (id, amount)...]
-
-    cursor.execute(f"SELECT MAX(id) FROM bd2.rezerwacja")
-    reservation_id = cursor.fetchall()[0][0]
-    reservation_id = 1 if reservation_id is None else reservation_id + 1
+def create_order(products, cost, reservation_id):
+    """
+    Products: [(id, amount), (id, amount)...]
+    """
 
     # Create order
     cursor.execute(f"INSERT INTO bd2.zamowienie (koszt, rezerwacja_id) VALUES ({int(cost)}, {reservation_id})")
@@ -25,6 +23,10 @@ def create_order(products, cost):
     # Insert products
     for id, amount in products:
         cursor.execute(f"INSERT INTO bd2.pozycja (liczba, produkt_spozywczy_id, zamowienie_id) VALUES ({amount}, {id}, {order_id})")
+
+
+    # update reservation
+    cursor.execute(f"update bd2.rezerwacja set zamowienie_id = {order_id} where id = {reservation_id}")
 
     cursor.execute("COMMIT;")
 
@@ -37,28 +39,25 @@ def make_reservation(start, end, room, project, title, cost):
     reservation_id = last_reservation if reservation_id is None else reservation_id + 1
     last_reservation = reservation_id
 
-    # Get id of order assigned to reservation
-    cursor.execute(f"SELECT id FROM bd2.zamowienie WHERE bd2.zamowienie.rezerwacja_id = {reservation_id}")
-    order_id = cursor.fetchall()
-    if len(order_id) == 0:
-        return
 
-    order_id = order_id[0][0]
+    sql_str = f"INSERT INTO bd2.rezerwacja (rozpoczecie, zakonczenie, sala_id, cel, projekt_id, koszt)" \
+              f" VALUES ('{start}', '{end}', {room}, '{title}', {project}, {int(cost)})"
+    cursor.execute(sql_str)
 
-    cursor.execute(f"INSERT INTO bd2.rezerwacja (rozpoczecie, zakonczenie, sala_id, cel, projekt_id, koszt, zamowienie_id) VALUES ('{start}', '{end}', {room}, '{title}', {project}, {int(cost)}, {order_id})")
 
-def delete_reservation(reservation_id):
+def delete_reservation(reservation_id, with_order=True):
     # Delete reservation
     cursor.execute(f"DELETE FROM bd2.rezerwacja WHERE id = {reservation_id}")
 
     # Get order id
-    cursor.execute(f"SELECT id FROM bd2.zamowienie WHERE rezerwacja_id = {reservation_id}")
-    order_id = cursor.fetchall()[0][0]
+    if with_order:
+        cursor.execute(f"SELECT id FROM bd2.zamowienie WHERE rezerwacja_id = {reservation_id}")
+        order_id = cursor.fetchall()[0][0]
 
-    # Delete all products from order
-    cursor.execute(f"DELETE FROM bd2.pozycja WHERE zamowienie_id = {order_id}")
+        # Delete all products from order
+        cursor.execute(f"DELETE FROM bd2.pozycja WHERE zamowienie_id = {order_id}")
 
-    # Delete order
-    cursor.execute(f"DELETE FROM bd2.zamowienie WHERE id = {order_id}")
+        # Delete order
+        cursor.execute(f"DELETE FROM bd2.zamowienie WHERE id = {order_id}")
 
     cursor.execute("COMMIT;")
