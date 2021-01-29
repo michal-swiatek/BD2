@@ -33,7 +33,7 @@ def db_login(login):
     if result[0] is not None:
         logged_role = 'a'
     elif result[1] is not None:
-        logged_role = 'k'
+        logged_role = 'm'
     elif result[2] is not None:
         logged_role = 'w'
 
@@ -172,20 +172,24 @@ def delete_account(account_login=None):
         id = cursor.fetchall()[0][0]
 
         # Delete subtype record
+        print(logged_role)
         if logged_role == 'a':
             cursor.execute(
-                f'SELECT bd2.administrator.id FROM bd2.administrator, bd2.uzytkownik WHERE bd2.uzytkownik.administrator_id = bd2.administrator.id AND bd2.uzytkownik.id={id}')
+                f'SELECT administrator_id FROM bd2.uzytkownik WHERE  bd2.uzytkownik.id={id}')
         elif logged_role == 'm':
             cursor.execute(
-                f'SELECT bd2.kierownik.id FROM bd2.kierownik, bd2.uzytkownik WHERE bd2.uzytkownik.kierownik_id = bd2.kierownik.id AND bd2.uzytkownik.id={id}')
+                f'SELECT kierownik_id FROM bd2.uzytkownik WHERE bd2.uzytkownik.id={id}')
         elif logged_role == 'w':
             cursor.execute(
-                f'SELECT bd2.pracownik.id FROM bd2.pracownik, bd2.uzytkownik WHERE bd2.uzytkownik.pracownik_id = bd2.pracownik.id AND bd2.uzytkownik.id={id}')
+                f'SELECT pracownik_id FROM bd2.uzytkownik WHERE  bd2.uzytkownik.id={id}')
 
         id_sub = cursor.fetchall()[0][0]
 
-        cursor.execute(f'DELETE FROM bd2.uzytkownik WHERE id="{id}"')
+        # del contact data
+        cursor.execute(f'DELETE FROM bd2.dane_kontaktowe WHERE uzytkownik_id={id}')
+
         # delete user
+        cursor.execute(f'DELETE FROM bd2.uzytkownik WHERE id="{id}"')
 
         # delete subtype
         if logged_role == 'a':
@@ -194,16 +198,6 @@ def delete_account(account_login=None):
             cursor.execute(f'DELETE FROM bd2.kierownik WHERE id="{id_sub}"')
         elif logged_role == 'w':
             cursor.execute(f'DELETE FROM bd2.pracownik WHERE id="{id_sub}"')
-
-        # # Delete user record
-        # cursor.execute(f'SELECT id FROM bd2.uzytkownik WHERE login="{account_login}"')
-        # id = cursor.fetchall()[0][0]
-        # cursor.execute(f'DELETE FROM bd2.uzytkownik WHERE id="{id}"')
-        #
-        # # Delete contact record
-        # cursor.execute(f'SELECT bd2.dane_kontaktowe.id FROM bd2.dane_kontaktowe, bd2.uzytkownik WHERE bd2.uzytkownik.login="{account_login}" AND bd2.dane_kontaktowe.uzytkownik_id = bd2.uzytkownik.id')
-        # id = cursor.fetchall()[0][0]
-        # cursor.execute(f'DELETE FROM bd2.dane_kontaktowe WHERE id="{id}"')
 
         cursor.execute("commit;")
 

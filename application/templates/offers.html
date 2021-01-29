@@ -3,7 +3,14 @@
 
 <!--Some JS there for handling requests-->
 
-<script></script>
+<script>
+    function onBtnClick(e) {
+        // TODO: define a logic here
+        // get all products where quantity != 0
+        // calculate the price
+        // return it as total sum of the order
+    }
+</script>
 
 
 <table class="table table-bordered table-striped">
@@ -20,14 +27,43 @@
                 {% for cell in row %}
                     <td>{{ cell }}</td>
                 {% endfor %}
-                <td>0</td>
-                <td>
-                    <button class="btn btn-info">+</button>
-                    <button class="btn btn-info">-</button>
-                </td>
             </tr>
         {% endfor %}
     </tbody>
 </table>
+
+<button class="btn btn-success" onclick="onBtnClick(event)">Make order</button>
+
+<script>
+
+    // update columns of the table
+    const header_row = document.querySelectorAll("thead tr");
+
+    // update table rows
+    const rows = document.querySelectorAll("tbody tr");
+    console.log(rows);
+    rows.forEach(
+        row => {
+            let quantityValue = 0;
+            var z = document.createElement("td");
+            z.innerHTML = `${quantityValue}`;
+            row.appendChild(z);
+
+            var button_elements = document.createElement("td");
+            button_elements.innerHTML = `
+                    <button class="btn btn-info" onclick="increment()">+</button>
+                    <button class="btn btn-info" onclick="decrement()">-</button>
+            `
+            console.log(typeof quantity);
+            // const buttons =
+            //     `<td>
+            //         <button onclick="increment()">+</button>
+            //         <button onclick="decrement()">-</button>
+            //     </td>`;
+            row.appendChild(z);
+            row.appendChild(button_elements);
+        }
+    );
+</script>
 
 {% endblock %}
