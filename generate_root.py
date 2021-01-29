@@ -1,7 +1,7 @@
 import mysql.connector as connector
 import hashlib
 
-db = connector.connect(host="localhost", user="root", password="w?Kf+DX2at3Wmroz")
+db = connector.connect(host="localhost", user="root", password="1234321")
 cursor = db.cursor()
 
 password = "root"

@@ -4,7 +4,7 @@ import numpy as np
 from random import choice, randint
 import hashlib
 
-passwd = "w?Kf+DX2at3Wmroz"
+passwd = "1234321"
 
 mydb = mysql.connector.connect(
     host='localhost',
@@ -40,6 +40,9 @@ print("set up")
 def contact_type_generator(cursor):
     my_cursor.execute(f'INSERT INTO typ_kontaktu(typ) VALUES("email")')
     my_cursor.execute(f'INSERT INTO typ_kontaktu(typ) VALUES("nr telefonu")')
+
+
+
 
 
 def product_cat_generator(cursor, data: pd.DataFrame):

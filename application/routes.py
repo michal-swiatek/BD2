@@ -88,8 +88,7 @@ def reservations():
     return render_template("reservations.html",
                            title="Reservations",
                            headings=headings,
-                           reservation_data=reservation_data,
-                           make_reservation=make_reservation)
+                           reservation_data=reservation_data)
 
 
 @app.route('/projects')
@@ -101,6 +100,8 @@ def list_projects():
                            headings=["Project Title"],
                            title="Projects",
                            projects_data=projects_data)
+
+
 
 @app.route('/report')
 def make_reports():

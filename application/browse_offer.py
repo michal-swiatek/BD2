@@ -16,18 +16,25 @@ def get_offer(catering_company_id):
     cursor.execute(f'SELECT bd2.produkt_spozywczy.id, cena, max_zamowienie, opis FROM bd2.produkt_spozywczy, bd2.firma_cateringowa WHERE bd2.firma_cateringowa.id = {catering_company_id} AND bd2.firma_cateringowa.id = bd2.produkt_spozywczy.firma_cateringowa_id')
     return cursor.fetchall()
 
+def get_products_data(catering_id):
+
+    cursor.execute(f"SELECT opis, cena FROM bd2.produkt_spozywczy WHERE firma_cateringowa_id = {catering_id}")
+
+    return cursor.fetchall()
+
 def get_projects():
+
     logged_as = get_logged_username()
     cursor.execute(f'SELECT * FROM bd2.uzytkownik WHERE login = "{logged_as}"')
 
     temp = cursor.fetchall()
-    if len(temp) == 0:
-        return []
+    projects = []
 
-    worker_id = temp[0][7]
+    if len(temp) != 0:
 
-    cursor.execute(f"SELECT nazwa FROM bd2.projekt JOIN bd2.pracownik ON bd2.projekt.komorka_organizacyjna_id = bd2.pracownik.komorka_organizacyjna_id WHERE bd2.pracownik.id = '{worker_id}'")
+        worker_id = temp[0][7]
+        cursor.execute(f"SELECT nazwa FROM bd2.projekt JOIN bd2.pracownik ON bd2.projekt.komorka_organizacyjna_id = bd2.pracownik.komorka_organizacyjna_id WHERE bd2.pracownik.id = '{worker_id}'")
 
-    projects = cursor.fetchall()
+        projects = cursor.fetchall()
 
     return projects

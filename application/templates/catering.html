@@ -1,8 +1,40 @@
 {% extends "layout.html" %}
 {% block content %}
 
-{% for row in catering_data %}
-    <p>{{ row[0] }} {{ row[1] }} {{ row[2] }}</p>
-{% endfor %}
+
+<!--<script>-->
+<!--    function onBtnClick(e) {-->
+<!--        // e.preventDefault();-->
+<!--        // const room_id = e.path[2].cells[8].childNodes[0].data;-->
+<!--        const catering_company_id = e.path;-->
+<!--        const body = JSON.stringify(catering_company_id);-->
+<!--        document.getElementById("myButton").onclick = function () {-->
+<!--            location.href = "www.yoursite.com";-->
+<!--        };-->
+<!--    }-->
+<!--</script>-->
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            {% for header in headings %}
+            <th>{{ header }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in catering_data %}
+            <tr>
+                {% for cell in row %}
+                    <td>{{ cell }}</td>
+                {% endfor %}
+                <td>
+                    <button onclick="onBtnClick(event)" class="btn btn-info">
+                        <a href={{url_for("make_offers")}}>Offer</a></button>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
 
 {% endblock %}
