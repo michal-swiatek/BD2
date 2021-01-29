@@ -36,8 +36,9 @@ print("set up")
 
 
 def contact_type_generator(cursor):
-    # cursor.execute(f'INSERT INTO typ_kontaktu(typ) VALUES("email")')
-    # cursor.execute(f'INSERT INTO typ_kontaktu(typ) VALUES("nr telefonu")')
+    cursor.execute(f'INSERT INTO typ_kontaktu(typ) VALUES("email")')
+    cursor.execute(f'INSERT INTO typ_kontaktu(typ) VALUES("nr telefonu")')
+    cursor.execute("COMMIT;")
     pass
 
 
@@ -207,7 +208,7 @@ def rooms_generator(cursor):
 
         room_number = np.random.uniform(5)
 
-        id_bud = np.random.randint(max_id_budynku)
+        id_bud = np.random.randint(1, max_id_budynku)
 
         sitting_places = int(area * 0.4)
         standing_places = int(area * 1.5)
@@ -332,15 +333,12 @@ def add_misc(cursor):
     cursor.execute("COMMIT;")
 
 
-
 contact_type_generator(my_cursor)
 print("Inserted Contact Types")
 
 product_cat_generator(my_cursor, product_categories)
 print("Loaded product_category")
 
-contact_type_generator(my_cursor)
-print("Inserted Contact Types")
 
 users_generator(my_cursor, users_data)
 print("Loaded Users")

@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS firma_cateringowa (
 );
 
 CREATE TABLE IF NOT EXISTS kierownik (
-    id 		INT NOT NULL,
+    id 		INT,
     -- uzytk_id INT NOT NULL,
     CONSTRAINT kierownik_pk PRIMARY KEY (id)
 );
@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS klasyfikacja_produktu (
 CREATE TABLE IF NOT EXISTS komorka_organizacyjna (
     nazwa         	VARCHAR(30) NOT NULL,
     id    		INT NOT NULL AUTO_INCREMENT,
-    kierownik_id  	INT NOT NULL,
+    kierownik_id  	INT,
     CONSTRAINT komorka_organizacyjna_pk PRIMARY KEY (id)
 );
 
@@ -242,7 +242,7 @@ ALTER TABLE dostepnosc_sprzetu
 
 ALTER TABLE komorka_organizacyjna
     ADD CONSTRAINT komorka_kierownik_fk FOREIGN KEY ( kierownik_id )
-        REFERENCES kierownik ( id );
+        REFERENCES kierownik ( id ) ON DELETE SET NULL;
 
 ALTER TABLE pozycja
     ADD CONSTRAINT pozycja_produkt_spozywczy_fk FOREIGN KEY ( produkt_spozywczy_id )
@@ -311,20 +311,8 @@ ALTER TABLE uzytkownik
 ALTER TABLE uzytkownik
     ADD CONSTRAINT uzytkownik_pracownik_fk FOREIGN KEY ( pracownik_id )
         REFERENCES pracownik ( id );
-        
--- ALTER TABLE administrator
--- 	ADD CONSTRAINT admin_uzytkownik_fk FOREIGN KEY ( uzytk_id )
--- 		REFERENCES uzytkownik ( id );
 
--- ALTER TABLE pracownik
--- 	ADD CONSTRAINT prac_uzytkownik_fk FOREIGN KEY ( uzytk_id )
--- 		REFERENCES uzytkownik ( id );
--- 	
--- ALTER TABLE kierownik
--- 	ADD CONSTRAINT kier_uzytkownik_fk FOREIGN KEY ( uzytk_id )
--- 		REFERENCES uzytkownik ( id );
-        
 ALTER TABLE zamowienie
     ADD CONSTRAINT zamowienie_rezerwacja_fk FOREIGN KEY ( rezerwacja_id )
-        REFERENCES zamowienie ( id );
+        REFERENCES  rezerwacja ( id );
         
