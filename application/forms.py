@@ -34,5 +34,4 @@ class UpdateForm(FlaskForm):
 class DeleteForm(FlaskForm):
 
     username = StringField('Username')
-
     submit = SubmitField("Delete account")

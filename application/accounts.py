@@ -202,3 +202,14 @@ def delete_account(account_login=None):
         cursor.execute("commit;")
 
         db_logout()
+
+
+def modify_password(username, new_password):
+
+    hasher = hashlib.sha3_224()
+    hasher.update(bytes(new_password, encoding='utf-8'))
+
+    pass_hash = hasher.hexdigest()
+
+    cursor.execute(f'UPDATE uzytkownik SET hash_hasla = "{pass_hash}" WHERE login = "{username}"')
+    cursor.execute.commit()
