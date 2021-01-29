@@ -4,8 +4,15 @@ import random
 
 from application import cursor
 
-logged_as = None
-logged_role = None
+def set_inits():
+    global logged_as, logged_role
+
+    logged_role = 'a'
+    logged_as = None
+
+def get_logged_username():
+    global logged_as
+    return logged_as
 
 def db_login(login):
     global logged_as, logged_role
@@ -133,9 +140,11 @@ def delete_account(account_login=None):
     if account_login is not None and logged_role != 'a':
         return
 
+    # If not login specified - delete my account
     if account_login is None:
         account_login = logged_as
 
+    #
     if account_login is not None:
         cursor.execute(f'SELECT id FROM bd2.uzytkownik WHERE login="{account_login}"')
         id = cursor.fetchall()[0][0]

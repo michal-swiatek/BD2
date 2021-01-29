@@ -1,0 +1,15 @@
+Dodawanie nowej rezerwacji każda wstawiana wartośc powinna być pobrana z formularza
+INSERT INTO bd2.rezerwacja (rozpoczecie, zakonczenie, sala_id, cel, projekt_id, koszt) VALUES ('01.01.2010', '03.01.2010', 2, "dupa", 1, 1000);
+COMMIT;
+
+Pobranie rezerwacji kolidujących z podaną datą (tutaj trzeba zastąpić te wpisane ręcznie daty na pobrane z formularza)
+SELECT * FROM bd2.rezerwacja WHERE sala_id = 1 AND (zakonczenie BETWEEN '01/01/1999' AND '31/01/2021' OR rozpoczecie BETWEEN '01/01/1999' AND '31/01/2021');
+
+WAŻNE! Poniższe zapytania są zależne od zalogowanej roli
+
+Projekty pracownika - zastąpić login loginem pracownika
+SELECT nazwa, bd2.projekt.komorka_organizacyjna_id FROM bd2.projekt, bd2.uzytkownik, bd2.pracownik WHERE login = "BrNnaarn" AND bd2.uzytkownik.pracownik_id = bd2.pracownik.id AND bd2.projekt.komorka_organizacyjna_id = bd2.pracownik.komorka_organizacyjna_id;
+
+
+Projekty kierownika - zastąpić login loginem pracownika
+SELECT bd2.projekt.nazwa, bd2.projekt.komorka_organizacyjna_id FROM bd2.projekt, bd2.uzytkownik, bd2.komorka_organizacyjna WHERE login = "rtJxefee" AND bd2.uzytkownik.kierownik_id = bd2.komorka_organizacyjna.kierownik_id AND bd2.projekt.komorka_organizacyjna_id = bd2.komorka_organizacyjna.id;

@@ -4,10 +4,12 @@ import numpy as np
 
 import hashlib
 
+passwd = "1234321"
+
 mydb = mysql.connector.connect(
     host='localhost',
     user='root',
-    password='w?Kf+DX2at3Wmroz',
+    password=passwd,
     database='bd2'
 )
 print("connected!\n")
@@ -219,8 +221,9 @@ print('Inserted Buildings')
 def rooms_generator(cursor):
     num_rooms = 1000
     # Max id budynku
-    cursor.execute('SELECT MAX(id) FROM budynek')
-    max_id_budynku = cursor.fetchall()[0][0]
+    cursor.execute('SELECT id FROM budynek')
+    building_ids = [item[0] for item in cursor.fetchall()]
+
 
     for i in range(num_rooms):
         # THINK OF BETTER VALUES THERE
@@ -228,7 +231,9 @@ def rooms_generator(cursor):
 
         room_number = np.random.uniform(5)
 
-        id_bud = np.random.randint(max_id_budynku)
+        id_bud = np.random.choice(building_ids)
+
+        building_ids.remove(id_bud)
 
         sitting_places = int(area * 0.4)
         standing_places = int(area * 1.5)
@@ -241,3 +246,45 @@ def rooms_generator(cursor):
 
 rooms_generator(my_cursor)
 print("Inserted Rooms")
+
+
+def generate_departments(cursor):
+
+    departments = ["Dzial HR",
+                   "Dzial Wdrazania",
+                   "Dzial Obslugi Klienta",
+                   "Dzial Marketingu",
+                   "Dzial Cyberbezpieczenstwa",
+                   "Dzial IT",
+                   "Dzial Ksiegowosci"]
+
+    cursor.execute("SELECT id FROM kierownik")
+    managers = [item[0] for item in cursor.fetchall()]
+
+    for dep in departments:
+        manager_id = np.random.choice(managers)
+
+        cursor.execute(f'INSERT INTO komorka_organizacyjna(nazwa, kierownik_id) VALUES ("{dep}", {manager_id})')
+        managers.remove(manager_id)
+
+    cursor.execute("Commit;")
+
+generate_departments(my_cursor)
+print("generated departments")
+
+def update_workers(cursor):
+
+    cursor.execute("SELECT id FROM komorka_organizacyjna")
+    department_ids = [item[0] for item in cursor.fetchall()]
+
+    cursor.execute("SELECT id FROM pracownik")
+    worker_ids = [item[0] for item in cursor.fetchall()]
+    for worker_id in worker_ids:
+
+        dep_id = np.random.choice(department_ids)
+        cursor.execute(f"UPDATE pracownik SET komorka_organizacyjna_id = {dep_id} WHERE id = {worker_id}")
+
+    cursor.execute("Commit;")
+
+update_workers(my_cursor)
+print("updated workers")
