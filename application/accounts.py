@@ -4,6 +4,8 @@ import random
 
 from application import cursor
 
+logged_as = None
+
 def set_inits():
     global logged_as, logged_role
 

@@ -324,7 +324,7 @@ ALTER TABLE uzytkownik
 -- 	ADD CONSTRAINT kier_uzytkownik_fk FOREIGN KEY ( uzytk_id )
 -- 		REFERENCES uzytkownik ( id );
         
-ALTER TABLE zamowienie
-    ADD CONSTRAINT zamowienie_rezerwacja_fk FOREIGN KEY ( rezerwacja_id )
-        REFERENCES zamowienie ( id );
+-- ALTER TABLE zamowienie
+--     ADD CONSTRAINT zamowienie_rezerwacja_fk FOREIGN KEY ( rezerwacja_id )
+--         REFERENCES zamowienie ( id );
         
