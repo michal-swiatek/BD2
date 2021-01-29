@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<!--Some JS there for handling requests-->
+
+<script></script>
+
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            {% for header in headings %}
+            <th>{{ header }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in products_data %}
+            <tr>
+                {% for cell in row %}
+                    <td>{{ cell }}</td>
+                {% endfor %}
+                <td>0</td>
+                <td>
+                    <button class="btn btn-info">+</button>
+                    <button class="btn btn-info">-</button>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

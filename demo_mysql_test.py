@@ -41,7 +41,6 @@ def contact_type_generator(cursor):
     cursor.execute(f'INSERT INTO typ_kontaktu(typ) VALUES("email")')
     cursor.execute(f'INSERT INTO typ_kontaktu(typ) VALUES("nr telefonu")')
     cursor.execute("COMMIT;")
-    pass
 
 
 def product_cat_generator(cursor, data: pd.DataFrame):
@@ -339,8 +338,6 @@ def add_misc(cursor):
 
 
 
-contact_type_generator(my_cursor)
-print("Inserted Contact Types")
 
 product_cat_generator(my_cursor, product_categories)
 print("Loaded product_category")

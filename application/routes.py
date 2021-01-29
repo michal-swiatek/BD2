@@ -5,7 +5,7 @@ from flask import render_template, flash, redirect, url_for, request
 from application import app
 from application.forms import RegistrationForm, LoginForm
 from application.accounts import validate_user, create_account, db_login, db_logout
-from application.browse_offer import get_catering_data, get_reservation_data, make_reservation, get_projects
+from application.browse_offer import get_catering_data, get_reservation_data, get_projects, get_products_data
 
 @app.route('/')
 @app.route('/home')
@@ -75,8 +75,7 @@ def reservations():
     return render_template("reservations.html",
                            title="Reservations",
                            headings=headings,
-                           reservation_data=reservation_data,
-                           make_reservation=make_reservation)
+                           reservation_data=reservation_data)
 
 
 @app.route('/projects')
@@ -88,6 +87,23 @@ def list_projects():
                            headings=["Project Title"],
                            title="Projects",
                            projects_data=projects_data)
+
+@app.route("/offers")
+def make_offers():
+
+    catering_id = 206
+    products_data = get_products_data(catering_id)
+
+    products_data = [list(tpl) for tpl in products_data]
+    for product in products_data:
+        product[1] /= 100
+
+    return render_template("offers.html",
+                           headings=["Product", "price", "amount"],
+                           title="Offers",
+                           products_data=products_data)
+
+
 
 @app.route('/report')
 def make_reports():

@@ -7,7 +7,7 @@ from application import cursor
 def set_inits():
     global logged_as, logged_role
 
-    logged_role = 'a'
+    logged_role = None
     logged_as = None
 
 def get_logged_username():
