@@ -4,6 +4,7 @@ from application import app
 from application.forms import RegistrationForm, LoginForm
 from application.accounts import validate_user, create_account, db_login, db_logout
 from application.browse_offer import get_catering_data, get_reservation_data
+from application.reservations import get_reservations
 
 @app.route('/')
 @app.route('/home')
@@ -21,6 +22,12 @@ def reservations():
     reservation_data = get_reservation_data()
 
     return render_template("reservations.html", title="Catering", reservation_data=reservation_data)
+
+@app.route('/reservation_form')
+def make_reservation():
+    reservations = get_reservations('01.01.1999', '31.01.2021', 2)
+
+    return render_template("make_reservation.html", title="Catering", reservations=reservations)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
