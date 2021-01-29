@@ -1,7 +1,7 @@
 import mysql.connector
 import pandas as pd
 import numpy as np
-
+from random import choice, randint
 import hashlib
 
 passwd = "1234321"
@@ -42,8 +42,7 @@ def contact_type_generator(cursor):
     my_cursor.execute(f'INSERT INTO typ_kontaktu(typ) VALUES("nr telefonu")')
 
 
-contact_type_generator(my_cursor)
-print("Inserted Contact Types")
+
 
 
 def product_cat_generator(cursor, data: pd.DataFrame):
@@ -54,8 +53,6 @@ def product_cat_generator(cursor, data: pd.DataFrame):
     cursor.execute('COMMIT;')
 
 
-product_cat_generator(my_cursor, product_categories)
-print("Loaded product_category")
 
 
 def sub_users_generator(cursor, data: pd.DataFrame):
@@ -131,8 +128,7 @@ def users_generator(cursor, data: pd.DataFrame):
     cursor.execute('COMMIT;')
 
 
-users_generator(my_cursor, users_data)
-print("Loaded Users")
+
 
 
 def companies_generator(cursor, data: pd.DataFrame):
@@ -177,8 +173,6 @@ def companies_generator(cursor, data: pd.DataFrame):
     cursor.execute('COMMIT;')
 
 
-companies_generator(my_cursor, companies_data)
-print("Inserted Companies")
 
 
 def buildings_generator(cursor, data):
@@ -214,8 +208,7 @@ def buildings_generator(cursor, data):
     cursor.execute("COMMIT;")
 
 
-buildings_generator(my_cursor, buildings_data)
-print('Inserted Buildings')
+
 
 
 def rooms_generator(cursor):
@@ -244,47 +237,152 @@ def rooms_generator(cursor):
     cursor.execute('COMMIT;')
 
 
+def create_departaments(cursor):
+    df = pd.read_csv("data/departaments.csv")
+    my_cursor.execute("SELECT id FROM kierownik")
+    res = [x[0] for x in cursor.fetchall()]
+    for i in range(len(df.index)):
+        idx = choice(res)
+        name = df["depts"][i]
+        cursor.execute(f'INSERT INTO komorka_organizacyjna(nazwa, kierownik_id) VALUES("{name}","{idx}")')
+
+    cursor.execute('COMMIT;')
+    my_cursor.execute("SELECT id FROM pracownik")
+    pracownicy = [x[0] for x in cursor.fetchall()]
+    my_cursor.execute("SELECT id FROM komorka_organizacyjna")
+    komorki = [x[0] for x in cursor.fetchall()]
+    for pracownik in pracownicy:
+        k = choice(komorki)
+        cursor.execute(f'UPDATE pracownik SET komorka_organizacyjna_id = {k} WHERE id={pracownik}')
+    cursor.execute('COMMIT;')
+
+
+def add_projects(cursor):
+    my_cursor.execute("SELECT id FROM komorka_organizacyjna")
+    res = [x[0] for x in cursor.fetchall()]
+    df = pd.read_csv("data/projects.csv")
+    for i in range(len(df.index)):
+        name = df["name"][i]
+        idx = choice(res)
+        cursor.execute(f'INSERT INTO projekt(nazwa, komorka_organizacyjna_id) VALUES("{name}","{idx}")')
+    cursor.execute('COMMIT;')
+
+
+def add_electronics(cursor):
+    models = pd.read_csv("data/electro_models.csv")
+    upper = max(len(models.index), 200)
+    types = pd.read_csv("data/electro_type.csv")
+    max_id = len(types.index)
+    for i in range(max_id):
+        type_i = types["type"][i]
+        cursor.execute(f'INSERT INTO rodzaj_sprzetu(rodzaj) VALUE("{type_i}")')
+
+    cursor.execute('COMMIT;')
+
+    cursor.execute("SELECT id FROM rodzaj_sprzetu")
+    types_ids = [x[0] for x in cursor.fetchall()]
+
+    for i in range(upper):
+        model = models["Model"][i]
+        type_id = choice(types_ids)
+        cursor.execute(f'INSERT INTO sprzet(model, rodzaj_sprzetu_id) VALUES ("{model}", "{type_id}")')
+
+    cursor.execute('COMMIT;')
+    cursor.execute("SELECT id FROM sala")
+    sale = [x[0] for x in cursor.fetchall()]
+
+    cursor.execute("SELECT id FROM sprzet")
+    electro = [x[0] for x in cursor.fetchall()]
+
+    for i in range(upper):
+        sala = choice(sale)
+        num = randint(1, 5)
+        el = choice(electro)
+        cursor.execute(f'INSERT INTO dostepnosc_sprzetu(liczba, sala_id, sprzet_id) VALUES ("{num}", "{sala}","{el}")')
+
+    cursor.execute('COMMIT;')
+
+
+def add_misc(cursor):
+    df = pd.read_csv("data/produkty.csv")
+    names = df["name"]
+    prices = df["price"]
+    cursor.execute("SELECT id FROM firma_cateringowa")
+    companies = [x[0] for x in cursor.fetchall()]
+    for k in range(len(df.index)):
+        price = prices[k] * 100
+        name = names[k]
+        comp = choice(companies)
+        max_zam = randint(5, 200)
+
+        cursor.execute(f'INSERT INTO produkt_spozywczy(cena, max_zamowienie, firma_cateringowa_id, opis) VALUES("{price}", "{max_zam}", "{comp}", "{name}") ')
+    cursor.execute("COMMIT;")
+
+    cursor.execute("SELECT id FROM klasyfikacja_produktu")
+    klas = [x[0] for x in cursor.fetchall()]
+    cursor.execute("SELECT id FROM produkt_spozywczy")
+    prod = [x[0] for x in cursor.fetchall()]
+    for p in prod:
+        k = choice(klas)
+        cursor.execute(f'INSERT INTO przypisanie_produktu(produkt_spozywczy_id, klasyfikacja_produktu_id) VALUES ("{p}","{k}")')
+    cursor.execute("COMMIT;")
+
+    obsluga = ["cleaning", "servers", "it support", "cameraperson"]
+    for o in obsluga:
+        price = randint(1000, 50000)
+        cursor.execute(f'INSERT INTO dodatkowa_obsluga(obsluga, cena) VALUES ("{o}", "{price}")')
+    cursor.execute("COMMIT;")
+
+    attr = ["wheelchair accesible", "air conditioning"]
+    for a in attr:
+        cursor.execute(f'INSERT INTO dodatkowy_atrybut(atrybut) VALUE ("{a}")')
+
+    cursor.execute("SELECT id FROM sala")
+    sale = [x[0] for x in cursor.fetchall()]
+    cursor.execute("SELECT id FROM dodatkowy_atrybut")
+    attr = [x[0] for x in cursor.fetchall()]
+    i = randint(1, 20)
+    for a in range(len(attr)):
+        for k in range(30):
+            s = sale[i]
+            i += 1
+            cursor.execute(f'INSERT INTO dostepnosc_atrybutu(sala_id, dodatkowy_atrybut_id) VALUES ("{s}", "{attr[a]}")')
+
+    cursor.execute("COMMIT;")
+
+
+
+contact_type_generator(my_cursor)
+print("Inserted Contact Types")
+
+product_cat_generator(my_cursor, product_categories)
+print("Loaded product_category")
+
+contact_type_generator(my_cursor)
+print("Inserted Contact Types")
+
+users_generator(my_cursor, users_data)
+print("Loaded Users")
+
+companies_generator(my_cursor, companies_data)
+print("Inserted Companies")
+
+buildings_generator(my_cursor, buildings_data)
+print('Inserted Buildings')
+
 rooms_generator(my_cursor)
 print("Inserted Rooms")
 
+create_departaments(my_cursor)
+print("Inserted Departments")
+add_projects(my_cursor)
+print("Inserted Projects")
 
-def generate_departments(cursor):
+add_electronics(my_cursor)
+print("Inserted Electronics")
+add_misc(my_cursor)
+print("Inserted Misc")
 
-    departments = ["Dzial HR",
-                   "Dzial Wdrazania",
-                   "Dzial Obslugi Klienta",
-                   "Dzial Marketingu",
-                   "Dzial Cyberbezpieczenstwa",
-                   "Dzial IT",
-                   "Dzial Ksiegowosci"]
 
-    cursor.execute("SELECT id FROM kierownik")
-    managers = [item[0] for item in cursor.fetchall()]
+mydb.commit()
 
-    for dep in departments:
-        manager_id = np.random.choice(managers)
-
-        cursor.execute(f'INSERT INTO komorka_organizacyjna(nazwa, kierownik_id) VALUES ("{dep}", {manager_id})')
-        managers.remove(manager_id)
-
-    cursor.execute("Commit;")
-
-generate_departments(my_cursor)
-print("generated departments")
-
-def update_workers(cursor):
-
-    cursor.execute("SELECT id FROM komorka_organizacyjna")
-    department_ids = [item[0] for item in cursor.fetchall()]
-
-    cursor.execute("SELECT id FROM pracownik")
-    worker_ids = [item[0] for item in cursor.fetchall()]
-    for worker_id in worker_ids:
-
-        dep_id = np.random.choice(department_ids)
-        cursor.execute(f"UPDATE pracownik SET komorka_organizacyjna_id = {dep_id} WHERE id = {worker_id}")
-
-    cursor.execute("Commit;")
-
-update_workers(my_cursor)
-print("updated workers")

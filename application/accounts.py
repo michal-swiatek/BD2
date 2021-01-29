@@ -44,7 +44,11 @@ def validate_user(login, password):
 
     cursor.execute(f'SELECT hash_hasla FROM bd2.uzytkownik WHERE login = "{login.data}"')
 
-    db_password = cursor.fetchall()[0][0]
+    temp = cursor.fetchall()
+    if len(temp) == 0:
+        return False
+
+    db_password = temp[0][0]
 
     return db_password == hasher.hexdigest()
 
@@ -146,35 +150,37 @@ def delete_account(account_login=None):
 
     #
     if account_login is not None:
-        cursor.execute(f'SELECT id FROM bd2.uzytkownik WHERE login="{account_login}"')
+        # Delete contact record
+        cursor.execute(
+            f'SELECT bd2.dane_kontaktowe.id FROM bd2.dane_kontaktowe, bd2.uzytkownik WHERE bd2.uzytkownik.login="{account_login}" AND bd2.dane_kontaktowe.uzytkownik_id = bd2.uzytkownik.id')
         id = cursor.fetchall()[0][0]
+        cursor.execute(f'DELETE FROM bd2.dane_kontaktowe WHERE id="{id}"')
 
-        # Delete subtype record
+        # Get subtype record id
         if logged_role == 'a':
-            cursor.execute(f'SELECT bd2.administrator.id FROM bd2.administrator, bd2.uzytkownik WHERE bd2.uzytkownik.administrator_id = bd2.administrator.id AND bd2.uzytkownik.id={id}')
+            cursor.execute(
+                f'SELECT bd2.administrator.id FROM bd2.administrator, bd2.uzytkownik WHERE bd2.uzytkownik.administrator_id = bd2.administrator.id AND bd2.uzytkownik.id={id}')
         elif logged_role == 'm':
-            cursor.execute(f'SELECT bd2.kierownik.id FROM bd2.kierownik, bd2.uzytkownik WHERE bd2.uzytkownik.kierownik_id = bd2.kierownik.id AND bd2.uzytkownik.id={id}')
+            cursor.execute(
+                f'SELECT bd2.kierownik.id FROM bd2.kierownik, bd2.uzytkownik WHERE bd2.uzytkownik.kierownik_id = bd2.kierownik.id AND bd2.uzytkownik.id={id}')
         elif logged_role == 'w':
-            cursor.execute(f'SELECT bd2.pracownik.id FROM bd2.pracownik, bd2.uzytkownik WHERE bd2.uzytkownik.pracownik_id = bd2.pracownik.id AND bd2.uzytkownik.id={id}')
+            cursor.execute(
+                f'SELECT bd2.pracownik.id FROM bd2.pracownik, bd2.uzytkownik WHERE bd2.uzytkownik.pracownik_id = bd2.pracownik.id AND bd2.uzytkownik.id={id}')
 
-        id = cursor.fetchall()[0][0]
-
-        if logged_role == 'a':
-            cursor.execute(f'DELETE FROM bd2.administrator WHERE id="{id}"')
-        elif logged_role == 'm':
-            cursor.execute(f'DELETE FROM bd2.kierownik WHERE id="{id}"')
-        elif logged_role == 'w':
-            cursor.execute(f'DELETE FROM bd2.pracownik WHERE id="{id}"')
+        subtype_id = cursor.fetchall()[0][0]
 
         # Delete user record
         cursor.execute(f'SELECT id FROM bd2.uzytkownik WHERE login="{account_login}"')
         id = cursor.fetchall()[0][0]
         cursor.execute(f'DELETE FROM bd2.uzytkownik WHERE id="{id}"')
 
-        # Delete contact record
-        cursor.execute(f'SELECT bd2.dane_kontaktowe.id FROM bd2.dane_kontaktowe, bd2.uzytkownik WHERE bd2.uzytkownik.login="{account_login}" AND bd2.dane_kontaktowe.uzytkownik_id = bd2.uzytkownik.id')
-        id = cursor.fetchall()[0][0]
-        cursor.execute(f'DELETE FROM bd2.dane_kontaktowe WHERE id="{id}"')
+        # Delete subtype
+        if logged_role == 'a':
+            cursor.execute(f'DELETE FROM bd2.administrator WHERE id="{subtype_id}"')
+        elif logged_role == 'm':
+            cursor.execute(f'DELETE FROM bd2.kierownik WHERE id="{subtype_id}"')
+        elif logged_role == 'w':
+            cursor.execute(f'DELETE FROM bd2.pracownik WHERE id="{subtype_id}"')
 
         cursor.execute("commit;")
 

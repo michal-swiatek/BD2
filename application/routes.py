@@ -12,6 +12,12 @@ from application.browse_offer import get_catering_data, get_reservation_data, ma
 def home():
     return render_template("home.html", title="Login")
 
+@app.route('/catering')
+def catering():
+    catering_data = get_catering_data()
+
+    return render_template("catering.html", title="Catering", catering_data=catering_data)
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -45,11 +51,6 @@ def register():
 
     return render_template("register.html", title="Register", form=form)
 
-@app.route('/catering')
-def catering():
-    catering_data = get_catering_data()
-
-    return render_template("catering.html", title="Catering", catering_data=catering_data)
 
 
 
