@@ -4,10 +4,12 @@ import numpy as np
 from random import choice, randint
 import hashlib
 
+passwd = "1234321"
+
 mydb = mysql.connector.connect(
     host='localhost',
     user='root',
-    password='w?Kf+DX2at3Wmroz',
+    password=passwd,
     database='bd2'
 )
 print("connected!\n")
@@ -199,8 +201,9 @@ def buildings_generator(cursor, data):
 def rooms_generator(cursor):
     num_rooms = 1000
     # Max id budynku
-    cursor.execute('SELECT MAX(id) FROM budynek')
-    max_id_budynku = cursor.fetchall()[0][0]
+    cursor.execute('SELECT id FROM budynek')
+    building_ids = [item[0] for item in cursor.fetchall()]
+
 
     for i in range(num_rooms):
         # THINK OF BETTER VALUES THERE
@@ -208,7 +211,9 @@ def rooms_generator(cursor):
 
         room_number = np.random.uniform(5)
 
-        id_bud = np.random.randint(1, max_id_budynku)
+        id_bud = np.random.choice(building_ids)
+
+        building_ids.remove(id_bud)
 
         sitting_places = int(area * 0.4)
         standing_places = int(area * 1.5)
@@ -333,12 +338,15 @@ def add_misc(cursor):
     cursor.execute("COMMIT;")
 
 
+
 contact_type_generator(my_cursor)
 print("Inserted Contact Types")
 
 product_cat_generator(my_cursor, product_categories)
 print("Loaded product_category")
 
+contact_type_generator(my_cursor)
+print("Inserted Contact Types")
 
 users_generator(my_cursor, users_data)
 print("Loaded Users")

@@ -4,9 +4,15 @@ import random
 
 from application import cursor
 
-logged_as = None
-logged_role = None
+def set_inits():
+    global logged_as, logged_role
 
+    logged_role = 'a'
+    logged_as = None
+
+def get_logged_username():
+    global logged_as
+    return logged_as
 
 def db_login(login):
     global logged_as, logged_role
@@ -26,13 +32,11 @@ def db_login(login):
     elif result[2] is not None:
         logged_role = 'w'
 
-
 def db_logout():
     global logged_as, logged_role
 
     logged_as = None
     logged_role = None
-
 
 def validate_user(login, password):
     hasher = hashlib.sha3_224()
@@ -40,10 +44,13 @@ def validate_user(login, password):
 
     cursor.execute(f'SELECT hash_hasla FROM bd2.uzytkownik WHERE login = "{login.data}"')
 
-    db_password = cursor.fetchall()[0][0]
+    temp = cursor.fetchall()
+    if len(temp) == 0:
+        return False
+
+    db_password = temp[0][0]
 
     return db_password == hasher.hexdigest()
-
 
 def generate_password(length):
     # Generate password and its hash
@@ -51,7 +58,6 @@ def generate_password(length):
     password = ''.join(random.choice(letters) for i in range(length))
 
     return password
-
 
 def create_account(name, surname, login, mail, role, department):
     if logged_role == 'a':
@@ -75,6 +81,8 @@ def create_account(name, surname, login, mail, role, department):
             cursor.execute(
                 f'INSERT INTO bd2.uzytkownik(imie, nazwisko, login, hash_hasla, pracownik_id) VALUES("{name}","{surname}", "{login}", "{hashed_password}", "{user_id}")')
 
+            cursor.execute(f'SELECT MAX(id) FROM bd2.pracownik')
+            subtype_id = cursor.fetchall()[0][0]
 
             cursor.execute(f'SELECT id from uzytkownik where pracownik_id = {user_id}')
             user_id = cursor.fetchall()[0][0]
@@ -131,7 +139,6 @@ def edit_account(name, surname, login, mail):
 
         cursor.execute("commit;")
 
-
 def change_password(password):
     if logged_as is not None:
         hasher = hashlib.sha3_224()
@@ -140,7 +147,6 @@ def change_password(password):
 
         cursor.execute(f'UPDATE bd2.uzytkownik SET hash_hasla="{hashed_password}"')
         cursor.execute("commit;")
-
 
 def delete_account(account_login=None):
     global logged_role
@@ -157,10 +163,7 @@ def delete_account(account_login=None):
         cursor.execute(f'SELECT id FROM bd2.uzytkownik WHERE login="{account_login}"')
         id = cursor.fetchall()[0][0]
 
-        # delete contact data
-        cursor.execute(f'DELETE FROM bd2.dane_kontaktowe WHERE uzytkownik_id="{id}"')
-
-        # get subtype id
+        # Delete subtype record
         if logged_role == 'a':
             cursor.execute(
                 f'SELECT bd2.administrator.id FROM bd2.administrator, bd2.uzytkownik WHERE bd2.uzytkownik.administrator_id = bd2.administrator.id AND bd2.uzytkownik.id={id}')
