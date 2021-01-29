@@ -1,6 +1,10 @@
 {% extends "layout.html" %}
 {% block content %}
 
-
+{% if username is not none %}
+    <h2>You're logged in as {{ username }}</h2>
+{% else %}
+    <h2>Not logged in</h2>
+{% endif %}
 
 {% endblock %}

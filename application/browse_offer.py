@@ -1,6 +1,22 @@
 from application import cursor
 from application.accounts import get_logged_username
 
+def get_role(login):
+    role = cursor.execute(f'SELECT administrator_id, pracownik_id, kierownik_id FROM bd2.uzytkownik WHERE login = "{login}"')
+
+    role_data = cursor.fetchall()
+
+    if len(role_data) != 0:
+        if role_data[0][0]:
+            role = 'admin'
+        elif role_data[0][1]:
+            role = 'worker'
+        elif role_data[0][2]:
+            role = 'manager'
+    else:
+        role = None
+    return role
+
 def get_catering_data():
     cursor.execute(f'SELECT nazwa, limit_zamowien, kontakt FROM bd2.firma_cateringowa, bd2.dane_kontaktowe WHERE bd2.dane_kontaktowe.firma_cateringowa_id = bd2.firma_cateringowa.id')
     return cursor.fetchall()
@@ -14,7 +30,9 @@ def get_reservation_data():
 
 def get_offer(catering_company_id):
     cursor.execute(f'SELECT bd2.produkt_spozywczy.id, cena, max_zamowienie, opis FROM bd2.produkt_spozywczy, bd2.firma_cateringowa WHERE bd2.firma_cateringowa.id = {catering_company_id} AND bd2.firma_cateringowa.id = bd2.produkt_spozywczy.firma_cateringowa_id')
-    return cursor.fetchall()
+    data = cursor.fetchall()
+    print(data)
+    return data
 
 def get_products_data(catering_id):
 
