@@ -9,7 +9,7 @@ def get_reservations(start, end, room):
     return cursor.fetchall()
 
 
-def create_order(products, cost, reservation_id):
+def create_order(products, reservation_id, cost=0):
     """
     Products: [(id, amount), (id, amount)...]
     """
@@ -20,17 +20,19 @@ def create_order(products, cost, reservation_id):
     cursor.execute(f"SELECT MAX(id) FROM bd2.zamowienie")
     order_id = cursor.fetchall()[0][0]
 
+
+    # update reservation
+    cursor.execute(f"update bd2.rezerwacja set zamowienie_id = {order_id} where id = {reservation_id}")
+
     # Insert products
     for id, amount in products:
         cursor.execute(f"INSERT INTO bd2.pozycja (liczba, produkt_spozywczy_id, zamowienie_id) VALUES ({amount}, {id}, {order_id})")
 
 
-    # update reservation
-    cursor.execute(f"update bd2.rezerwacja set zamowienie_id = {order_id} where id = {reservation_id}")
 
     cursor.execute("COMMIT;")
 
-def make_reservation(start, end, room, project, title, cost):
+def make_reservation(start, end, room, project, title, cost=0):
     global last_reservation
 
     # Get id of new reservation

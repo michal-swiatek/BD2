@@ -11,7 +11,7 @@ class TestReservations(unittest.TestCase):
     def create_mock_reservation(self) -> int:
         cursor.execute(
             "INSERT INTO bd2.rezerwacja (rozpoczecie, zakonczenie, sala_id, cel, projekt_id, koszt, zamowienie_id)"
-            " VALUES ('2022-10-10 12:30:00', '2020-10-10 14:30:00', 1, '_testDelete', 1, 1000, NULL);")
+            " VALUES ('2022-10-10 12:30:00', '2020-10-10 14:30:00', 1, '_testDelete', 1, 0, NULL);")
         cursor.execute("select max(id) from bd2.rezerwacja")
         last_id = cursor.fetchall()[0][0]
 
@@ -21,14 +21,21 @@ class TestReservations(unittest.TestCase):
         cursor.execute(f'delete from bd2.rezerwacja where id={r_id}')
         cursor.execute('commit;')
 
+    def get_cost(self, products):
+        cost = 0
+        for p_id, p_count in products:
+            cursor.execute(f'select cena from produkt_spozywczy where id={p_id}')
+            p_cost = cursor.fetchall()[0][0]
+            cost += p_cost * p_count
+        return cost
 
     def test_make_reservation_no_order(self):
         cursor.execute(f'select count(*) from bd2.rezerwacja')
         before_n_reservations = cursor.fetchall()[0][0]
         start, end = '2022-10-10 12:30:00', '2020-10-10 14:30:00'
-        room, project, title, cost = 1, 1, '_test Market analysis2', 1000
+        room, project, title = 1, 1, '_test Market analysis2'
 
-        reservations.make_reservation(start, end, room, project, title, cost)
+        reservations.make_reservation(start, end, room, project, title)
         cursor.execute(f'select count(*) from bd2.rezerwacja')
         after_n_reservations = cursor.fetchall()[0][0]
 
@@ -41,36 +48,50 @@ class TestReservations(unittest.TestCase):
         new_reservation = cursor.fetchall()[0]
         self.assertEqual(new_reservation[0], datetime.datetime.strptime(start, '%Y-%m-%d %H:%M:%S'))
         self.assertEqual(new_reservation[1], title)
-        self.assertEqual(new_reservation[2], cost)
+        self.assertEqual(new_reservation[2], 0)        # cost of a reservation with no order is 0
         self.assertEqual(new_reservation[3], None)
 
         # clean up
         cursor.execute(f'delete from bd2.rezerwacja where id={last_id}')
         cursor.execute('commit;')
 
+
     def test_create_order(self):
         products = [(1, 2), (2, 10), (3, 40)]
-        cost = 2137
 
         # make mock reservation
-        mock_id = self.create_mock_reservation()
+        reservation_id = self.create_mock_reservation()
 
         cursor.execute('select count(*) from bd2.zamowienie')
         before_n_orders = cursor.fetchall()[0][0]
 
-        reservations.create_order(products, cost, mock_id)
+        reservations.create_order(products, reservation_id)
 
         # check if a new row was inserted
         cursor.execute('select count(*) from bd2.zamowienie')
         after_n_orders = cursor.fetchall()[0][0]
         self.assertEqual(before_n_orders, after_n_orders - 1)
 
+        # check if the correct order was inserted
+        cursor.execute('select max(id) from bd2.zamowienie')
+        result = cursor.fetchall()
+        self.assertTrue(len(result) != 0)
+        order_id = result[0][0]
+        cursor.execute(f'select koszt from bd2.zamowienie where id = {order_id}')
+        cost_inserted = cursor.fetchall()[0][0]
+        self.assertEqual(cost_inserted, self.get_cost(products), 'denormalization trigger calculates the order cost correctly')
+
+        cursor.execute(f'select koszt from bd2.rezerwacja where id={reservation_id}')
+        reserv_cost = cursor.fetchall()[0][0]
+        self.assertEqual(reserv_cost, self.get_cost(products), 'denormalization trigger calculates the reservation cost correctly')
+
+
         # clean up
         cursor.execute('select max(id) from bd2.zamowienie')
         id = cursor.fetchall()[0][0]
         cursor.execute(f'update bd2.rezerwacja set zamowienie_id = NULL where zamowienie_id = {id}')
         cursor.execute(f'delete from bd2.zamowienie where id={id}')
-        self.remove_mock_reservation(mock_id)
+        self.remove_mock_reservation(reservation_id)
 
     def test_delete_reservation(self):
 
