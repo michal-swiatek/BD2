@@ -212,4 +212,7 @@ def modify_password(username, new_password):
     pass_hash = hasher.hexdigest()
 
     cursor.execute(f'UPDATE uzytkownik SET hash_hasla = "{pass_hash}" WHERE login = "{username}"')
-    cursor.execute.commit()
+    cursor.execute("Commit;")
+
+    cursor.execute(f'SELECT hash_hasla FROM uzytkownik WHERE login={username}')
+    print(cursor.fetchall()[0][0])

@@ -9,8 +9,6 @@ import hashlib
 
 
 
-
-
 class TestReservations(unittest.TestCase):
 
     def create_mock_reservation(self) -> int:

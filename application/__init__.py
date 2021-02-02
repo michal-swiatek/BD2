@@ -1,7 +1,10 @@
 from flask import Flask
 import mysql.connector as connector
+from .dashboards.dashboard import create_app
 
 app = Flask(__name__)
+
+dash_app = create_app(app)
 
 app.config['SECRET_KEY'] = '32760782cd6db55d4feb2d5418b9d288'
 passwd = "1234321"

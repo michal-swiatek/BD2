@@ -25,9 +25,8 @@ class LoginForm(FlaskForm):
 class UpdateForm(FlaskForm):
 
     username = StringField('Username', validators=[DataRequired()])
-
-    new_password = PasswordField('Password', validators=[DataRequired()])
-    confirm_new_password = PasswordField('ConfirmPassword', validators=[DataRequired(), EqualTo("Password")])
+    new_password = PasswordField('New password', validators=[DataRequired()])
+    confirm_new_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo("new_password", message="Passwords must match")])
 
     submit = SubmitField("Change Password")
 

@@ -250,7 +250,7 @@ ALTER TABLE pozycja
 
 ALTER TABLE pozycja
     ADD CONSTRAINT pozycja_zamowienie_fk FOREIGN KEY ( zamowienie_id )
-        REFERENCES zamowienie ( id );
+        REFERENCES zamowienie ( id ) ON DELETE CASCADE;
 
 ALTER TABLE pracownik
     ADD CONSTRAINT pracownik_komorka_fk FOREIGN KEY ( komorka_organizacyjna_id )

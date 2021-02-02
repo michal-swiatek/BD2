@@ -1,6 +1,7 @@
 import json
 import asyncio
 import time
+from datetime import timedelta
 
 from flask import render_template, flash, redirect, url_for, request, session
 
@@ -9,6 +10,8 @@ from application.forms import RegistrationForm, LoginForm, UpdateForm, DeleteFor
 from application.accounts import validate_user, create_account, db_login, db_logout, modify_password, delete_account
 from application.reservations import get_reservations
 from application.browse_offer import get_catering_data, get_reservation_data, get_projects, get_offer, get_role
+
+
 
 @app.route('/')
 @app.route('/home', methods=['GET', 'POST'])
@@ -75,14 +78,19 @@ def register():
 @app.route('/update_account', methods=['GET', 'POST'])
 def update_account():
 
-    form = UpdateForm()
+
+    form = UpdateForm(request.form)
     if 'username' not in session.keys():
         # message to user here later
         return redirect(url_for('login'))
 
+    print("Into update account")
+
     if form.validate_on_submit():
+        print("Something went right")
         if (session['username'] == form.username.data or session['role'] == 'admin'):
 
+            print("Updating")
             if form.new_password.data == form.confirm_new_password.data:
                 # ALLOW_modification
                 modify_password(form.username.data, form.new_password.data)
@@ -92,7 +100,7 @@ def update_account():
         else:
             flash(f"You're allowed to modify only your account", "warning")
 
-        return redirect(url_for('home'))
+        # return redirect(url_for('home'))
 
     return render_template("update_account.html", form=form)
 
@@ -141,6 +149,11 @@ def offer(catering_id):
     print(catering_id)
 
     offers = get_offer(catering_id)
+    # offers1 = [list(item) for item in offers]
+    #
+    # for item in offers:
+    #     item[1] /= 100
+
     print(offers)
     print(session["room_id"])
 
@@ -153,7 +166,7 @@ def offer(catering_id):
 
     return render_template("offers.html",
                            title="Offers",
-                           headings=["Product name", "Price", "Max order", "Description"],
+                           headings=["Product id", "Price", "Max order", "Description"],
                            products_data=offers)
 
 
@@ -206,7 +219,7 @@ def list_projects():
 
 
 
-
+dashboard_url = "/dashboard"
 @app.route('/reports')
 def make_reports():
 
@@ -217,4 +230,4 @@ def make_reports():
 
         return redirect('/home')
     else:
-        return render_template("reports.html", message=f"Welcome, {session['username']}")
+        return render_template("reports.html", dash_url=dashboard_url, message=f"Welcome, {session['username']}")

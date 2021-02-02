@@ -32,10 +32,35 @@
     </tbody>
 </table>
 
-<button class="btn btn-success" onclick="onBtnClick(event)">Make order</button>
+<button class="btn btn-success" onclick="sendOrder(event)">Make order</button>
 
 <script>
+    const sendOrder = e => {
+        let data = [];
+        rows.forEach(row=>{
+            data.push({
+                product_id: +row.cells[0].innerText,
+                amount: +row.cells[4].innerText
+            })
+        })
+        const body = JSON.stringify(data);
+        fetch('/', {
+            mathod:"POST",
+            headers: {
+                'Content-Type':'application/json'
+            },
+            body
+        })
+    }
+    const increment = (e) => {
+        let value = e.path[2].cells[4].innerText;
+        e.path[2].cells[4].innerText = ++value;
+    };
+    const decrement = (e) => {
+        let value = e.path[2].cells[4].innerText;
+        if(value>0) e.path[2].cells[4].innerText = --value;
 
+    };
     // update columns of the table
     const header_row = document.querySelectorAll("thead tr");
 
@@ -51,8 +76,8 @@
 
             var button_elements = document.createElement("td");
             button_elements.innerHTML = `
-                    <button class="btn btn-info" onclick="increment()">+</button>
-                    <button class="btn btn-info" onclick="decrement()">-</button>
+                    <button class="btn btn-info" onclick="increment(event)">+</button>
+                    <button class="btn btn-info" onclick="decrement(event)">-</button>
             `
             console.log(typeof quantity);
             // const buttons =

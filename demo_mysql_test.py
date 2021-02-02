@@ -1,7 +1,8 @@
 import mysql.connector
 import pandas as pd
 import numpy as np
-from random import choice, randint
+from random import choice, randint, randrange
+import datetime
 import hashlib
 
 passwd = "1234321"
@@ -294,11 +295,21 @@ def add_electronics(cursor):
     cursor.execute("SELECT id FROM sprzet")
     electro = [x[0] for x in cursor.fetchall()]
 
+    chosen_pairs = []
     for i in range(upper):
+
         sala = choice(sale)
-        num = randint(1, 5)
         el = choice(electro)
+        if (sala, el) in chosen_pairs:
+
+            sala = choice(sale)
+            el = choice(electro)
+
+
+        num = randint(1, 5)
         cursor.execute(f'INSERT INTO dostepnosc_sprzetu(liczba, sala_id, sprzet_id) VALUES ("{num}", "{sala}","{el}")')
+
+        chosen_pairs.append((sala, el))
 
     cursor.execute('COMMIT;')
 
@@ -351,6 +362,128 @@ def add_misc(cursor):
     cursor.execute("COMMIT;")
 
 
+def insert_reservations(cursor):
+
+    start_date = datetime.date(2019, 10, 12)
+    end_date = datetime.date(2021, 3, 12)
+    time_between = end_date - start_date
+    days_between = time_between.days
+
+    # Get room ids
+    cursor.execute('SELECT id FROM sala')
+    room_ids = [item[0] for item in cursor.fetchall()]
+
+    # get project ids
+    cursor.execute('SELECT id FROM projekt')
+    project_ids = [item[0] for item in cursor.fetchall()]
+
+    # better handling taken rooms
+    taken_rooms = []
+
+    for i in range(1000):
+
+        random_number = randrange(days_between)
+        random_date_start = (start_date + datetime.timedelta(days=random_number)).strftime('%Y-%m-%d %H:%M:%S')
+        random_date_end = (start_date + datetime.timedelta(days=randint(1, 3))).strftime('%Y-%m-%d %H:%M:%S')
+
+        room_id = np.random.choice(room_ids)
+        if room_id in taken_rooms:
+            # print("selecting another room")
+            room_id = np.random.choice(room_ids)
+
+        taken_rooms.append(room_id)
+
+        project_id = np.random.choice(project_ids)
+
+        price = 100 * np.random.randint(800, 1000)
+
+        cursor.execute(
+            f'INSERT INTO rezerwacja(rozpoczecie, zakonczenie, sala_id, cel, projekt_id, zamowienie_id, koszt) VALUES ("{random_date_start}", "{random_date_end}", {room_id}, "", {project_id}, NULL, {price})')
+
+    cursor.execute('COMMIT;')
+
+
+def insert_orders(cursor):
+    # Get reservations ids
+
+    cursor.execute("SELECT id, koszt FROM rezerwacja")
+    res_costs = [item for item in cursor.fetchall()]
+    reservation_ids = [item[0] for item in res_costs]
+    costs = [item[1] for item in res_costs]
+
+
+
+    used_reservations = []
+    for i in range(200):
+
+        reservation_id = np.random.choice(reservation_ids)
+
+        if reservation_id not in used_reservations:
+            # reservation_id = np.random.choice(reservation_ids)
+
+            index = reservation_ids.index(reservation_id)
+
+            koszt = costs[index]
+            used_reservations.append(reservation_id)
+
+            cursor.execute(f"INSERT INTO zamowienie(rezerwacja_id, koszt) VALUES ({reservation_id}, {koszt})")
+            cursor.execute('COMMIT;')
+
+            cursor.execute(f'SELECT MAX(id) FROM zamowienie')
+            order_id = cursor.fetchall()[0][0]
+
+            cursor.execute(f'UPDATE rezerwacja SET zamowienie_id = {order_id} WHERE id = {reservation_id}')
+            cursor.execute("Commit;")
+
+
+
+def staff_reservations(cursor):
+    # Get reservation ids
+    cursor.execute("SELECT id FROM rezerwacja")
+    reservation_ids = [item[0] for item in cursor.fetchall()]
+
+    # Get staff ids
+    cursor.execute("SELECT id FROM dodatkowa_obsluga")
+    staff_ids = [item[0] for item in cursor.fetchall()]
+
+    for r_id in reservation_ids:
+
+        num = np.random.randint(0, 7)
+        used_staff = []
+        for j in range(num):
+            staff_id = np.random.choice(staff_ids)
+            if staff_id not in used_staff:
+                cursor.execute(
+                    f'INSERT INTO rezerwacja_obslugi(dodatkowa_obsluga_id, rezerwacja_id) VALUES ({staff_id}, {r_id})')
+                used_staff.append(staff_id)
+
+    cursor.execute('COMMIT;')
+
+
+
+def positions_generator(cursor):
+    cursor.execute("SELECT id FROM zamowienie")
+    order_ids = [item[0] for item in cursor.fetchall()]
+
+    cursor.execute("SELECT id FROM produkt_spozywczy")
+    product_ids = [item[0] for item in cursor.fetchall()]
+
+    for ord_id in order_ids:
+        num = np.random.randint(7, 17)
+        used_products = []
+        for j in range(num):
+            product_id = np.random.choice(product_ids)
+            if product_id not in used_products:
+                num_items = np.random.randint(1, 3)
+                cursor.execute(
+                    f'INSERT INTO pozycja(liczba, produkt_spozywczy_id, zamowienie_id) VALUES ({num_items}, {product_id}, {ord_id})')
+                used_products.append(product_id)
+
+    cursor.execute('Commit;')
+
+
+positions_generator(my_cursor)
+print('Inserted positions generator')
 
 contact_type_generator(my_cursor)
 print("Inserted Contact Types")
@@ -380,6 +513,17 @@ print("Inserted Electronics")
 add_misc(my_cursor)
 print("Inserted Misc")
 
+insert_reservations(my_cursor)
+print('Inserted Reservations')
+
+insert_orders(my_cursor)
+print("Inserted orders")
+
+staff_reservations(my_cursor)
+print("Inserted staff reservations")
+
+positions_generator(my_cursor)
+print("Inserted positions")
 
 mydb.commit()
 

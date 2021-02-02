@@ -1,0 +1,8 @@
+dash
+flask
+flask-wtf
+dash-renderer
+dash-html-components
+dash-core-components
+plotly
+mysql.connector
