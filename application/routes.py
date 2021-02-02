@@ -164,8 +164,9 @@ def offer(catering_id):
 
     if request.method == "POST":
         print(request.json)
+        return redirect(url_for(make_reservation))
         # TODO: better parse json here
-        session["products"] = request.json
+        # session["products"] = request.json
 
     return render_template("offers.html",
                            title="Offers",
