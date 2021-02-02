@@ -154,15 +154,19 @@ def offer(catering_id):
     # for item in offers:
     #     item[1] /= 100
 
-    print(offers)
-    print(session["room_id"])
+    # print(offers)
+    # print(session["room_id"])
+
+    if 'room_id' in session.keys():
+        print(session['room_id'])
 
     print('itsme')
 
     if request.method == "POST":
         print(request.json)
+        return redirect(url_for(make_reservation))
         # TODO: better parse json here
-        session["products"] = request.json
+        # session["products"] = request.json
 
     return render_template("offers.html",
                            title="Offers",
@@ -201,9 +205,27 @@ def reservations():
 
 @app.route('/reservation_form')
 def make_reservation():
-    reservations = get_reservations('01.01.1999', '31.01.2021', 2)
 
-    return render_template("make_reservation.html", title="Reservation", reservations=reservations)
+    # reservations = get_reservations('01.01.1999', '31.01.2021', 2)
+
+    room_id = session['room_id']
+
+
+    # TODO: start
+    # TODO: project_id
+    # TODO: end
+    # TODO: title
+
+    title = "So far in universe"
+    project_id = 1
+
+    start_date = '01.01.2019'
+    end_date = '02.03.2019'
+
+
+    make_reservation(start_date, end_date, room_id, project_id, title)
+
+    return render_template("make_reservation.html", title="Reservation")
 
 
 
