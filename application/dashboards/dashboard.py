@@ -1,6 +1,7 @@
 from datetime import date
 
 import dash
+import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
 
@@ -13,27 +14,32 @@ import pandas as pd
 
 colors = {
         'background': '#FFFFFF',
-        'text': '#7FDBFF'
+        'text': '#000000'
     }
 
 def create_app(server_app, cursor):
 
+    chart_width, chart_height = 500, 400
 
     app = dash.Dash(
         server=server_app,
-        routes_pathname_prefix='/dashboard/'
+        routes_pathname_prefix='/dashboard/',
+        external_stylesheets=[dbc.themes.BOOTSTRAP]
     )
 
     cost_data = pd.DataFrame(get_data_histogram(cursor)).rename(columns={0: 'koszt'})
     #
-    fig = px.histogram(cost_data, x="koszt")
+    fig = px.histogram(cost_data, x="koszt", width=chart_width, height=chart_height,
+                       title="Rozkład kosztów pojedyńczej rezerwacji")
 
     top10_df = get_data_count_res_aggr_geo(cursor, top_n=10)
-    fig_top_10 = px.bar(top10_df, x='miasto', y='liczba rezerwacji')
+    fig_top_10 = px.bar(top10_df, x='miasto', y='liczba rezerwacji', width=chart_width, height=chart_height,
+                        title='Liczba rezerwacji w różnych miastach')
 
 
     top_firms = get_top_suppliers(cursor)
-    top_firms_bar = px.bar(top_firms, x='firma', y='money spent')
+    top_firms_bar = px.bar(top_firms, x='firma', y='money spent', width=chart_width, height=chart_height,
+                           title='Ranking firm cateringowych pod względem wydanej kwoty')
 
 
     top_spend_comp_fig=None
@@ -44,20 +50,85 @@ def create_app(server_app, cursor):
     app.layout = html.Div(style={'backgroundColor': colors['background']}, children=[
 
         html.H1(
-            children='Aplikacja raportowa',
+            children='Raporty',
             style={
                 'textAlign': 'center',
                 'color': colors['text']
             }
         ),
 
+        dbc.Row([
+            dbc.Col(
+                html.Div(className="one-third column", children=[
+                    dcc.Dropdown(
+                        id='agg_ts_picker',
+                        options=[
+                            {'label': 'Po dniach', 'value': 'day'},
+                            {'label': 'Po miesiącach', 'value': 'month'},
+                        ],
+                        value='day'
+                    ),
 
-        html.Div(children='', style={
-            'textAlign': 'center',
-            'color': colors['text']
-        }),
+                    dcc.Graph(id='avg_res_cost_ts')
+                ])
+            ),
+            dbc.Col(
+                html.Div(className="one-third column", children=[
+                    dcc.Graph(id="res_cost_histogram", figure=fig)
+                ])
+            )
+        ]),
 
-        dcc.Graph(id="res_cost_histogram", figure=fig),
+        dbc.Row([
+            dbc.Col(
+                html.Div(children=[
+                    dcc.Graph(id='money_spent_per_company', figure=top_firms_bar)
+                ])
+            ),
+            dbc.Col(
+                html.Div(children=[
+                    dcc.Graph(id='count_bar_plot', figure=fig_top_10)
+                ])
+            )
+        ]),
+
+        # html.Div(className='row', children=[
+        #
+        #     html.Div(className="one-third column", children=[
+        #         dcc.Graph(id="res_cost_histogram", figure=fig)
+        #     ]),
+        #
+        #     html.Div(className="one-third column", children=[
+        #         dcc.Dropdown(
+        #             id='agg_ts_picker',
+        #             options=[
+        #                 {'label': 'Po dniach', 'value': 'day'},
+        #                 {'label': 'Po miesiącach', 'value': 'month'},
+        #             ],
+        #             value='day'
+        #         ),
+        #
+        #         dcc.Graph(id='avg_res_cost_ts')
+        #     ]),
+        #
+        # ]),
+        #
+        # html.Div(className='row', children=[
+        #     html.Div(children=[
+        #         dcc.Graph(id='count_bar_plot', figure=fig_top_10)
+        #     ]),
+        #
+        #     html.Div(children=[
+        #         dcc.Graph(id='money_spent_per_company', figure=top_firms_bar)
+        #     ])
+        # ])
+
+        # html.Div(children='', style={
+        #     'textAlign': 'center',
+        #     'color': colors['text']
+        # }),
+
+
 
         # dcc.DatePickerRange(
         #     id='date_picker',
@@ -67,26 +138,12 @@ def create_app(server_app, cursor):
         #     end_date=date(2020, 1, 1)
         # ),
 
-        dcc.Dropdown(
-            id='agg_ts_picker',
-            options=[
-                {'label': 'Po dniach', 'value': 'day'},
-                {'label': 'Po miesiącach', 'value': 'month'},
-            ],
-            value='day'
-        ),
-
-        dcc.Graph(id='avg_res_cost_ts'),
-
         # dcc.Dropdown(
         #     id='top_n_picker',
         #     options=[ {'label': i, 'value': i} for i in range(5, 50, 5)],
         #     value=10
         # ),
 
-        dcc.Graph(id='count_bar_plot', figure=fig_top_10),
-
-        dcc.Graph(id='money_spent_per_company', figure=top_firms_bar)
     ])
 
     @app.callback(
@@ -94,7 +151,10 @@ def create_app(server_app, cursor):
         [Input("agg_ts_picker", "value")]
     )
     def display_time_series(value):
-        time_series = px.line(get_data_time_series(cursor, group_by_param=value), x='data_rozpoczecia', y='koszt')
+        time_series = px.line(get_data_time_series(cursor, group_by_param=value), x='data_rozpoczecia', y='koszt',
+                              width=chart_width,
+                              height=chart_height,
+                              title="Wykres czasowy kosztu rezerwacji")
         return time_series
 
     # @app.callback(
