@@ -9,7 +9,7 @@ passwd = "1234321"
 # db = connector.connect(host="localhost", user="root", password=passwd)
 # cursor = db.cursor(buffered=True)
 
-db = connector.connect(host="localhost", user="root", password=passwd, database="bd2")
+db = connector.connect(host="localhost", user="bd2app", password="passwd", database="bd2")
 cursor = db.cursor(buffered=True)
 
 dash_app = create_app(app, cursor)
