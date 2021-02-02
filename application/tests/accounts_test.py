@@ -25,6 +25,7 @@ class MyTestCase(unittest.TestCase):
     usr_pass = 'test_main_usr'
     usr_u_id = 0
     usr_id = 0
+
     def adminInit(self):
         hasher = hashlib.sha3_224()
         hasher.update(bytes(self.admin_pass, encoding='utf-8'))
@@ -220,7 +221,7 @@ class MyTestCase(unittest.TestCase):
 
         self.adminCleanUp()
 
-    def test_edit_acccount(self):
+    def test_edit_account(self):
         self.adminInit()
         new_name = "test_new_name"
         new_surname = "test_new_surname"
@@ -268,7 +269,6 @@ class MyTestCase(unittest.TestCase):
 
         self.assertEqual(num_us_after+1, num_us_before)
 
-
     def test_delete_account_user(self):
         self.userInit()
         cursor.execute('SELECT count(*) from uzytkownik')
@@ -280,6 +280,30 @@ class MyTestCase(unittest.TestCase):
         num_us_after = cursor.fetchone()[0]
 
         self.assertEqual(num_us_after+1, num_us_before)
+
+    def test_create_account_when_not_admin(self):
+        self.userInit()
+
+        # create user acoount
+        cursor.execute(f'select count(*) from uzytkownik')
+        prev_u_count = cursor.fetchall()[0][0]
+        cursor.execute(f'select count(*) from pracownik')
+        prev_w_count = cursor.fetchall()[0][0]
+
+        cursor.execute(f'select min(id) from komorka_organizacyjna')
+        dept = cursor.fetchall()[0][0]
+
+        ac.create_account("test_w", "test_w", "test_w", "test_w@test.pl", 'w', dept)
+
+        cursor.execute("COMMIT;")
+        cursor.execute(f'select count(*) from uzytkownik')
+        aft_u_count = cursor.fetchall()[0][0]
+        cursor.execute(f'select count(*) from pracownik')
+        aft_w_count = cursor.fetchall()[0][0]
+        self.assertEqual(prev_u_count, aft_u_count)
+        self.assertEqual(prev_w_count, aft_w_count)
+
+        self.userCleanUp()
 
 
 if __name__ == '__main__':

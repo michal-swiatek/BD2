@@ -172,7 +172,6 @@ def delete_account(account_login=None):
         id = cursor.fetchall()[0][0]
 
         # Delete subtype record
-        print(logged_role)
         if logged_role == 'a':
             cursor.execute(
                 f'SELECT administrator_id FROM bd2.uzytkownik WHERE  bd2.uzytkownik.id={id}')

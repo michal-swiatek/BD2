@@ -6,9 +6,6 @@ import application.accounts as ac
 import hashlib
 
 
-
-
-
 class TestReservations(unittest.TestCase):
 
     def create_mock_reservation(self) -> int:
@@ -97,19 +94,6 @@ class TestReservations(unittest.TestCase):
         cursor.execute(f'select id from bd2.rezerwacja where id = {last_id}')
         result = cursor.fetchall()
         self.assertTrue(len(result) == 0, 'correct row was deleted')
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 if __name__ == '__main__':
