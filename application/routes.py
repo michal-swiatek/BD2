@@ -7,7 +7,7 @@ from flask import render_template, flash, redirect, url_for, request, session
 
 from application import app
 from application.forms import RegistrationForm, LoginForm, UpdateForm, DeleteForm
-from application.accounts import validate_user, create_account, db_login, db_logout, modify_password, delete_account
+from application.accounts import validate_user, create_account, db_login, db_logout, modify_password, delete_account as db_delete_account
 from application.reservations import get_reservations
 from application.browse_offer import get_catering_data, get_reservation_data, get_projects, get_offer, get_role
 
@@ -113,9 +113,10 @@ def delete_account():
         return redirect("login.html")
 
     if form.validate_on_submit():
+        print("Deleting account:", form.username.data)
         if session['username'] == form.username.data or session['role'] == 'admin':
 
-            delete_account(form.username.data)
+            db_delete_account(form.username.data)
 
             try:
                 session.pop("username")

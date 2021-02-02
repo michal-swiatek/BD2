@@ -4,8 +4,10 @@ import random
 
 from application import cursor
 
-logged_as = None
+from flask import session
 
+logged_as = None
+logged_role = None
 
 def set_inits():
     global logged_as, logged_role
@@ -213,5 +215,5 @@ def modify_password(username, new_password):
     cursor.execute(f'UPDATE uzytkownik SET hash_hasla = "{pass_hash}" WHERE login = "{username}"')
     cursor.execute("Commit;")
 
-    cursor.execute(f'SELECT hash_hasla FROM uzytkownik WHERE login={username}')
-    print(cursor.fetchall()[0][0])
+    # cursor.execute(f'SELECT hash_hasla FROM uzytkownik WHERE login={username}')
+    # print(cursor.fetchall()[0][0])
