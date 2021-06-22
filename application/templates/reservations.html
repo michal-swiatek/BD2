@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+{% block content %}
+
+
+<script>
+    function onBtnClick(e) {
+        // e.preventDefault();
+        const room_id = e.path[2].cells[8].childNodes[0].data;
+        const body = JSON.stringify(room_id);
+        fetch('/reservations', {
+            method:"POST",
+            headers:{
+                'Content-Type': 'application/json'
+            },
+            body
+        });
+    }
+</script>
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            {% for header in headings %}
+            <th>{{ header }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in reservation_data %}
+            {% set outer_loop = loop %}
+            <tr>
+                {% for cell in row %}
+                    {% set inner_loop = loop %}
+                    <td>{{ cell }}</td>
+                {% endfor %}
+
+                <td>
+                    <button onclick="onBtnClick(event)" class="btn btn-info">Reserve</button>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

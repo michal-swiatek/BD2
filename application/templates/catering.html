@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+{% block content %}
+
+
+<script>
+    function onBtnClick(e) {
+        // e.preventDefault();
+        const catering_company_id = e.path[2].cells[1].childNodes[0].data;
+        console.log(catering_company_id);
+        // const body = JSON.stringify(catering_company_id);
+        // fetch('/offers', {
+        //     method:"POST",
+        //     headers:{
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body
+        // });
+        const hrefArr = window.location.href.split('/');
+        hrefArr.pop();
+        hrefArr.push('offers');
+        hrefArr.push(parseInt(catering_company_id));
+        console.log(hrefArr.join('/'))
+        window.location.href = hrefArr.join('/')
+    }
+</script>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            {% for header in headings %}
+            <th>{{ header }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in catering_data %}
+            <tr>
+                {% for cell in row %}
+                    <td>{{ cell }}</td>
+                {% endfor %}
+                <td>
+                    <button onclick="onBtnClick(event)" class="btn btn-info">Offer</button>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<!--Some JS there for handling requests-->
+
+<script>
+    function onBtnClick(e) {
+        // TODO: define a logic here
+        // get all products where quantity != 0
+        // calculate the price
+        // return it as total sum of the order
+    }
+</script>
+
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            {% for header in headings %}
+            <th>{{ header }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in products_data %}
+            <tr>
+                {% for cell in row %}
+                    <td>{{ cell }}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<button class="btn btn-success" onclick="sendOrder(event)">Make order</button>
+
+<script>
+    const sendOrder = e => {
+        let data = [];
+        rows.forEach(row=>{
+            data.push({
+                product_id: +row.cells[0].innerText,
+                amount: +row.cells[4].innerText
+            })
+        })
+        const body = JSON.stringify(data);
+        fetch('/', {
+            mathod:"POST",
+            headers: {
+                'Content-Type':'application/json'
+            },
+            body
+        })
+    }
+    const increment = (e) => {
+        let value = e.path[2].cells[4].innerText;
+        e.path[2].cells[4].innerText = ++value;
+    };
+    const decrement = (e) => {
+        let value = e.path[2].cells[4].innerText;
+        if(value>0) e.path[2].cells[4].innerText = --value;
+
+    };
+    // update columns of the table
+    const header_row = document.querySelectorAll("thead tr");
+
+    // update table rows
+    const rows = document.querySelectorAll("tbody tr");
+    console.log(rows);
+    rows.forEach(
+        row => {
+            let quantityValue = 0;
+            var z = document.createElement("td");
+            z.innerHTML = `${quantityValue}`;
+            row.appendChild(z);
+
+            var button_elements = document.createElement("td");
+            button_elements.innerHTML = `
+                    <button class="btn btn-info" onclick="increment(event)">+</button>
+                    <button class="btn btn-info" onclick="decrement(event)">-</button>
+            `
+            console.log(typeof quantity);
+            // const buttons =
+            //     `<td>
+            //         <button onclick="increment()">+</button>
+            //         <button onclick="decrement()">-</button>
+            //     </td>`;
+            row.appendChild(z);
+            row.appendChild(button_elements);
+        }
+    );
+</script>
+
+{% endblock %}

@@ -1,0 +1,8 @@
+{% extends "layout.html" %}
+{% block content %}
+
+{% for row in reservations %}
+    <p>{{ row[1] }} {{ row[2] }} {{ row[3] }} {{ row[4] }} {{ row[5] }} {{ row[7] }}</p>
+{% endfor %}
+
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block content %}
+
+    <h1>TODO: Deleting accounts here</h1>
+
+     <div class="content-section">
+        <form action="" method="post">
+            {{ form.hidden_tag() }}
+            <fieldset>
+
+                <legend class="border-bottom mb-4">Change Password</legend>
+
+                <!--Username-->
+                <div class="form-group">
+                    {{ form.username.label(class="form-control-label") }}
+                    {{ form.username(class="form-control form-control-lg") }}
+                </div>
+
+            </fieldset>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+            </div>
+        </form>
+    </div>
+
+{% endblock %}

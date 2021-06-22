@@ -1,0 +1,17 @@
+Skrypt create_db.sql
+- usuwa jeśli istnieje bazę danych bd2
+- tworzy bazę bd2, a w niej tabele, klucze główne i obce oraz ograniczenia unique
+- Wykonuje się kilka minut, trzeba mieć do niego cierpliwość
+
+Uwagi co do samej bazy
+- nieco inna konwencja nazewnictwa w stosunku do modelu relacyjnego - kolumny odnoszące się do klucza obcego nazywają się <tablename>.<primarykey>, klucze uprzednie nazywające się id_[sth] nazywają się teraz po prostu id, dla uproszczenia; usunęłam polskie znaki diakryczne
+- Łuki zaimplementowane są tak, że w klasach uzytkownik i dane_kontaktowe są wskazania na wszystkie klasy, z którymi mogą wchodzić w relacje i jest na tych polach dodany constraint odpowiedniego klucza obcego i constraint CHECK upewniający się że tylko jedna z wartości nie jest nullem
+- pozycje koszt w tabelach zamówienie i rezerwacja są aktualizowane automatycznie przez triggery w bazie danych na każdym update lub insert w tabeli pozycje (nie sprawdzałam jeszcze czy działają dobrze, ale się kompiluje xddd)
+
+SKRYPT triggers.sql - PRAWIDŁOWE WYKONANIE W KONSOLI MYSQL
+
+delimiter //
+source triggers.sql
+delimiter ;
+
+
